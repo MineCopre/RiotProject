@@ -1,8 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  //  statusBarColor: Colors.transparent,
+  //));
   runApp(MyApp());
 }
 
