@@ -114,6 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
       title: 'Baloon Control',
       home: Scaffold(
         body: Container(
+          padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
           child: Container(
             child: Image.asset(
               'assets/images/balloon.png',
