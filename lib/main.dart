@@ -106,24 +106,25 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     */
     return MaterialApp(
-      title: 'Baloon Control',
-      home: Scaffold(
-        appBar: PreferredSize(
-            preferredSize: Size.fromHeight(MediaQuery.of(context).size.height *
-                0.25), // here the desired height
-            child: AppBar(
-                backgroundColor: Color(0xFF2E8BC0),
-                //backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
-                flexibleSpace: Container(
-                  child: Image.asset(
-                    'assets/images/balloon.png',
-                  ),
-                  padding: const EdgeInsets.all(30),
-                ))),
-        //Full background for balloon image
-        body: Container(
+        title: 'Baloon Control',
+        home: Scaffold(
+          appBar: PreferredSize(
+              preferredSize: Size.fromHeight(
+                  MediaQuery.of(context).size.height *
+                      0.25), // here the desired height
+              child: AppBar(
+                  backgroundColor: Color(0xFF2E8BC0),
+                  //backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15)),
+                  flexibleSpace: Container(
+                    child: Image.asset(
+                      'assets/images/balloon.png',
+                    ),
+                    padding: const EdgeInsets.all(30),
+                  ))),
+          //Full background for balloon image
+          /*body: Container(
             child: Container(
               //Set the image to the balloon
               /*child: Image.asset(
@@ -151,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             //Because the blue background has a borderRadius, we need this to match the colors
             color: Colors.white),
-      ),
-    );
+      ),*/
+        ));
   }
 }
