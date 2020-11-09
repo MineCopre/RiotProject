@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void main() {
-  //SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-  ));
+  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+
   runApp(MyApp());
 }
 
@@ -56,103 +54,89 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    /*
-    return Scaffold(
-      appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          //title: Text(widget.title),
-          toolbarHeight: MediaQuery.of(context).size.height * 0.1,
-          actions: [
-            new Image.asset('assets/images/balloon.png'),
-          ],
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Image.asset('assets/images/balloon.png'),
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-    */
+
     return MaterialApp(
-        title: 'Baloon Control',
+        title: 'Balloon Control',
         home: Scaffold(
-          appBar: PreferredSize(
-              preferredSize: Size.fromHeight(
-                  MediaQuery.of(context).size.height *
-                      0.25), // here the desired height
-              child: AppBar(
-                  backgroundColor: Color(0xFF2E8BC0),
-                  //backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15)),
-                  flexibleSpace: Container(
-                    child: Image.asset(
-                      'assets/images/balloon.png',
+            appBar: PreferredSize(
+                preferredSize: Size.fromHeight(
+                    MediaQuery.of(context).size.height *
+                        0.25), //Adaptive height
+                child: AppBar(
+                    backgroundColor: Color(0xFF2E8BC0),
+                    //backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    flexibleSpace: Container(
+                      child: Image.asset(
+                        'assets/images/balloon.png',
+                      ),
+                      padding: const EdgeInsets.all(30),
+                    ))),
+            //Full background for balloon image
+            body: Container(
+                color: Colors.white,
+                //Column where the text and cards will stay
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding:
+                          const EdgeInsets.only(top: 50, bottom: 50, left: 20),
+                      child: Text('Real-Time Data: '),
+                      alignment: Alignment.centerLeft,
                     ),
-                    padding: const EdgeInsets.all(30),
-                  ))),
-          //Full background for balloon image
-          /*body: Container(
-            child: Container(
-              //Set the image to the balloon
-              /*child: Image.asset(
-                'assets/images/balloon.png',
-              ),*/
-
-              child: Row(
-                children: [
-                  Image.asset('assets/images/balloon.png', scale: 20),
-                  Image.asset('assets/images/balloon.png', scale: 20)
-                ],
-              ),
-
-              //Scale of the balloon
-              padding: const EdgeInsets.all(40),
-
-              alignment: Alignment.topCenter,
-              //Have the balloon changing depending on the size of the phone
-              height: MediaQuery.of(context).size.height * 0.35,
-
-              //Blue background behind balloon
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Color(0xFF2E8BC0)),
-            ),
-            //Because the blue background has a borderRadius, we need this to match the colors
-            color: Colors.white),
-      ),*/
-        ));
+                    new Expanded(
+                        //Each "card" is wrapped by a container
+                        child: GridView.count(
+                      scrollDirection: Axis.horizontal,
+                      primary: false,
+                      padding: const EdgeInsets.all(20),
+                      mainAxisSpacing: MediaQuery.of(context).size.width * 0.2,
+                      crossAxisCount: 1,
+                      children: <Widget>[
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          child: const Text("He'd have you all unravel at the"),
+                          color: Colors.teal[100],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          child: const Text('Heed not the rabble'),
+                          color: Colors.teal[200],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          child: const Text('Sound of screams but the'),
+                          color: Colors.teal[300],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          child: const Text('Who scream'),
+                          color: Colors.teal[400],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          child: const Text('Revolution is coming...'),
+                          color: Colors.teal[500],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          child: const Text('Revolution, they...'),
+                          color: Colors.teal[600],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          child: const Text('Revolution, they...'),
+                          color: Colors.teal[600],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          child: const Text('Revolution, they...'),
+                          color: Colors.teal[600],
+                        ),
+                      ],
+                    ))
+                  ],
+                ))));
   }
 }
