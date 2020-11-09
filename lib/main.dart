@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void main() {
-  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-  //  statusBarColor: Colors.transparent,
-  //));
+  //SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
   runApp(MyApp());
 }
 
@@ -112,17 +112,30 @@ class _MyHomePageState extends State<MyHomePage> {
             preferredSize: Size.fromHeight(MediaQuery.of(context).size.height *
                 0.25), // here the desired height
             child: AppBar(
-              backgroundColor: Color(0xFF2E8BC0),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15)),
-            )),
+                backgroundColor: Color(0xFF2E8BC0),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                flexibleSpace: Container(
+                  child: Image.asset(
+                    'assets/images/balloon.png',
+                  ),
+                  padding: const EdgeInsets.all(30),
+                ))),
         //Full background for balloon image
         body: Container(
             child: Container(
               //Set the image to the balloon
-              child: Image.asset(
+              /*child: Image.asset(
                 'assets/images/balloon.png',
+              ),*/
+
+              child: Row(
+                children: [
+                  Image.asset('assets/images/balloon.png', scale: 20),
+                  Image.asset('assets/images/balloon.png', scale: 20)
+                ],
               ),
+
               //Scale of the balloon
               padding: const EdgeInsets.all(40),
 
