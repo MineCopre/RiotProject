@@ -115,20 +115,24 @@ class _MyHomePageState extends State<MyHomePage> {
       home: Scaffold(
         body: Container(
           padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-          child: Container(
-            child: Image.asset(
-              'assets/images/balloon.png',
-              //scale: 15,
-            ),
-            padding: const EdgeInsets.all(40),
-            alignment: Alignment.topCenter,
-            height: MediaQuery.of(context).size.height * 0.35,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Color(0xFF2E8BC0)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                children: [
+                  Image.asset(
+                    'assets/images/balloon.png',
+                    scale: 50,
+                  ),
+                ],
+              ),
+              Image.asset('assets/images/balloon.png',scale: 50),
+              Image.asset('assets/images/balloon.png',scale: 50)
+            ],
           ),
           color: Colors.white,
         ),
+
       ),
     );
   }

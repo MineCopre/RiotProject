@@ -83,3 +83,12 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+
+#dart_tool
+.dart_tool/
+
+#graddle
+.graddle/
+
+#idea
+.idea/
