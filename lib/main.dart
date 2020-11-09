@@ -113,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 0.25), // here the desired height
             child: AppBar(
                 backgroundColor: Color(0xFF2E8BC0),
+                //backgroundColor: Colors.red,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),
                 flexibleSpace: Container(
