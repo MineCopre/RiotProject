@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 void main() {
-  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
 
   runApp(MyApp());
 }
@@ -82,11 +85,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     Container(
                       padding:
                           const EdgeInsets.only(top: 50, bottom: 50, left: 20),
-                      child: Text('Real-Time Data: '),
+                      child: AutoSizeText(
+                        'Real-Time Data: ',
+                        style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25),
+                        minFontSize: 20,
+                        maxLines: 1,
+                      ),
                       alignment: Alignment.centerLeft,
                     ),
                     new Expanded(
                         //Each "card" is wrapped by a container
+
                         child: GridView.count(
                       scrollDirection: Axis.horizontal,
                       primary: false,
@@ -95,45 +107,19 @@ class _MyHomePageState extends State<MyHomePage> {
                       crossAxisCount: 1,
                       children: <Widget>[
                         Container(
+                          decoration: new BoxDecoration(
+                              color: Color(0xFF2E8BC0),
+                              borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
-                          child: const Text("He'd have you all unravel at the"),
-                          color: Colors.teal[100],
+                          child: new Center(child: new Text("Temperature")),
                         ),
                         Container(
+                          decoration: new BoxDecoration(
+                              color: Color(0xFF2E8BC0),
+                              borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
-                          child: const Text('Heed not the rabble'),
-                          color: Colors.teal[200],
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          child: const Text('Sound of screams but the'),
-                          color: Colors.teal[300],
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          child: const Text('Who scream'),
-                          color: Colors.teal[400],
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          child: const Text('Revolution is coming...'),
-                          color: Colors.teal[500],
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          child: const Text('Revolution, they...'),
-                          color: Colors.teal[600],
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          child: const Text('Revolution, they...'),
-                          color: Colors.teal[600],
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          child: const Text('Revolution, they...'),
-                          color: Colors.teal[600],
-                        ),
+                          child: new Center(child: new Text("Humidity")),
+                        )
                       ],
                     ))
                   ],
