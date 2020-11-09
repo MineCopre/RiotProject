@@ -1,8 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  //SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
   runApp(MyApp());
 }
 
@@ -11,25 +16,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo Test',
+      title: 'HAW 20/21 RIOT OS Project',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-
         primarySwatch: Colors.blue,
         // This makes the visual density adapt to the platform that you run
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'asdasd'),
+      home: MyHomePage(title: 'Balloon Control Home Page'),
     );
   }
 }
@@ -111,25 +106,53 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     */
     return MaterialApp(
-      title: 'Baloon Control',
-      home: Scaffold(
-        body: Container(
-          padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-          child: Container(
-            child: Image.asset(
-              'assets/images/balloon.png',
-              //scale: 15,
+        title: 'Baloon Control',
+        home: Scaffold(
+          appBar: PreferredSize(
+              preferredSize: Size.fromHeight(
+                  MediaQuery.of(context).size.height *
+                      0.25), // here the desired height
+              child: AppBar(
+                  backgroundColor: Color(0xFF2E8BC0),
+                  //backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15)),
+                  flexibleSpace: Container(
+                    child: Image.asset(
+                      'assets/images/balloon.png',
+                    ),
+                    padding: const EdgeInsets.all(30),
+                  ))),
+          //Full background for balloon image
+          /*body: Container(
+            child: Container(
+              //Set the image to the balloon
+              /*child: Image.asset(
+                'assets/images/balloon.png',
+              ),*/
+
+              child: Row(
+                children: [
+                  Image.asset('assets/images/balloon.png', scale: 20),
+                  Image.asset('assets/images/balloon.png', scale: 20)
+                ],
+              ),
+
+              //Scale of the balloon
+              padding: const EdgeInsets.all(40),
+
+              alignment: Alignment.topCenter,
+              //Have the balloon changing depending on the size of the phone
+              height: MediaQuery.of(context).size.height * 0.35,
+
+              //Blue background behind balloon
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Color(0xFF2E8BC0)),
             ),
-            padding: const EdgeInsets.all(40),
-            alignment: Alignment.topCenter,
-            height: MediaQuery.of(context).size.height * 0.35,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Color(0xFF2E8BC0)),
-          ),
-          color: Colors.white,
-        ),
-      ),
-    );
+            //Because the blue background has a borderRadius, we need this to match the colors
+            color: Colors.white),
+      ),*/
+        ));
   }
 }
