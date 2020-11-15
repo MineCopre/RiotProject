@@ -100,12 +100,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         //Each "card" is wrapped by a container
 
                         child: GridView.count(
-                      scrollDirection: Axis.horizontal,
-                      primary: false,
-                      padding: const EdgeInsets.all(20),
-                      mainAxisSpacing: MediaQuery.of(context).size.width * 0.2,
-                      crossAxisCount: 1,
-                      children: <Widget>[
+                        scrollDirection: Axis.horizontal,
+                        primary: false,
+                        padding: const EdgeInsets.all(20),
+                        mainAxisSpacing: MediaQuery.of(context).size.width * 0.2,
+                        crossAxisCount: 1,
+                        children: <Widget>[
                         Container(
                           decoration: new BoxDecoration(
                               color: Color(0xFF2E8BC0),
@@ -123,6 +123,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                     ))
                   ],
-                ))));
+                )
+            )
+        )
+    );
   }
 }
