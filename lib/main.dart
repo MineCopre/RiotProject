@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -158,8 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
                           child: new Center(
-                            child:
-                                new Text("Temperature\n" + temperature + "ºC"),
+                            child: Text("Temperature\n$temperatureºC"),
                           ),
                         ),
                         Container(
@@ -168,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
                           child: new Center(
-                              child: new Text("Humidity\n" + humidity + "%")),
+                              child: new Text("Humidity\n$humidity%")),
                         )
                       ],
                     )),
