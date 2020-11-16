@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -49,6 +51,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  Completer<GoogleMapController> _controller = Completer();
+
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
+
+  static final CameraPosition _kLake = CameraPosition(
+      bearing: 192.8334901395799,
+      target: LatLng(37.43296265331129, -122.08832357078792),
+      tilt: 59.440717697143555,
+      zoom: 19.151926040649414);
+
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -77,55 +94,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(30),
                     ))),
             //Full background for balloon image
-            body: Container(
-                color: Colors.white,
-                //Column where the text and cards will stay
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      padding:
-                          const EdgeInsets.only(top: 50, bottom: 50, left: 20),
-                      child: AutoSizeText(
-                        'Real-Time Data: ',
-                        style: const TextStyle(
-                            fontFamily: 'Roboto',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25),
-                        minFontSize: 20,
-                        maxLines: 1,
-                      ),
-                      alignment: Alignment.centerLeft,
-                    ),
-                    new Expanded(
-                        //Each "card" is wrapped by a container
-
-                        child: GridView.count(
-                        scrollDirection: Axis.horizontal,
-                        primary: false,
-                        padding: const EdgeInsets.all(20),
-                        mainAxisSpacing: MediaQuery.of(context).size.width * 0.2,
-                        crossAxisCount: 1,
-                        children: <Widget>[
-                        Container(
-                          decoration: new BoxDecoration(
-                              color: Color(0xFF2E8BC0),
-                              borderRadius: new BorderRadius.circular(15)),
-                          padding: const EdgeInsets.all(8),
-                          child: new Center(child: new Text("Temperature")),
-                        ),
-                        Container(
-                          decoration: new BoxDecoration(
-                              color: Color(0xFF2E8BC0),
-                              borderRadius: new BorderRadius.circular(15)),
-                          padding: const EdgeInsets.all(8),
-                          child: new Center(child: new Text("Humidity")),
-                        )
-                      ],
-                    ))
-                  ],
-                )
-            )
-        )
+            body: GoogleMap(
+                    mapType: MapType.hybrid,
+              initialCameraPosition: _kGooglePlex,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
+            ),
+          floatingActionButton: FloatingActionButton.extended(
+          onPressed: _goToTheLake,
+          label: Text('To the lake!'),
+          icon: Icon(Icons.directions_boat),
+        ),
+        ),
     );
+  }
+  Future<void> _goToTheLake() async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 }
