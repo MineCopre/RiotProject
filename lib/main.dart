@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -59,12 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
   var retrievedName;
   var temperature;
   var humidity;
-  Completer<GoogleMapController> _controller = Completer();
-
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(53.556342, 10.021588),
-    zoom: 14.4746,
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -134,56 +128,62 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: <Widget>[
                         Container(
                           decoration: new BoxDecoration(
-                              color: Color(0xFF2E8BC0),
+                              color: Color(0xFFB1D4E0),
                               //color: Colors.red,
                               borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
-                          child: new Center(
-                            child:
-                                new Text("Temperature\n" + temperature + "ºC"),
+                          child: Center(
+                            child: RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(children: <TextSpan>[
+                                  TextSpan(
+                                      text: "Temperature\n\n",
+                                      style: TextStyle(
+                                          fontFamily: "Roboto",
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                          color: Color(0xFF0C2D48))),
+                                  TextSpan(
+                                    text: "$temperatureº",
+                                    style: TextStyle(
+                                        fontFamily: "Roboto",
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 30,
+                                        color: Color(0xFF0C2D48)),
+                                  )
+                                ])),
                           ),
                         ),
                         Container(
                           decoration: new BoxDecoration(
-                              color: Color(0xFF2E8BC0),
+                              color: Color(0xFFB1D4E0),
+                              //color: Colors.red,
                               borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
-
-                          child: new Center(
-                              child: new Text("Humidity\n" + humidity + "%")),
-                        )
-                        Container(
-                            decoration: new BoxDecoration(
-                                color: Color(0xFF2E8BC0),
-                                borderRadius: new BorderRadius.circular(15)),
-                            padding: const EdgeInsets.all(8),
-                            child: GoogleMap(
-                              mapType: MapType.terrain,
-                              compassEnabled: true,
-                              myLocationButtonEnabled: true,
-                              myLocationEnabled: true,
-                              initialCameraPosition: _kGooglePlex,
-                              onMapCreated: (GoogleMapController controller) {
-                                _controller.complete(controller);
-                              },
-                            ))
+                          child: Center(
+                            child: RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(children: <TextSpan>[
+                                  TextSpan(
+                                      text: "Humidity\n\n",
+                                      style: TextStyle(
+                                          fontFamily: "Roboto",
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                          color: Color(0xFF0C2D48))),
+                                  TextSpan(
+                                    text: "$humidity%",
+                                    style: TextStyle(
+                                        fontFamily: "Roboto",
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 30,
+                                        color: Color(0xFF0C2D48)),
+                                  )
+                                ])),
+                          ),
+                        ),
                       ],
-                    )) /*,
-                    RaisedButton(
-                      onPressed: () {
-                        ref
-                            .child("Temperature")
-                            .once()
-                            .then((DataSnapshot data) {
-                          print(data.value);
-                          print(data.key);
-                          setState(() {
-                            temperature = data.value;
-                          });
-                        });
-                      },
-                      child: Text("Get"),
-                    )*/
+                    ))
                   ],
                 ))));
   }
