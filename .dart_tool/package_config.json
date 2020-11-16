@@ -56,16 +56,34 @@
       "languageVersion": "2.10"
     },
     {
+      "name": "firebase_core",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-0.5.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "firebase_core_platform_interface",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_platform_interface-2.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "firebase_core_web",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_web-0.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "firebase_database",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_database-4.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "flutter",
       "rootUri": "file:///C:/flutter/packages/flutter",
       "packageUri": "lib/",
       "languageVersion": "2.10"
-    },
-    {
-      "name": "flutter_plugin_android_lifecycle",
-      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-1.0.11",
-      "packageUri": "lib/",
-      "languageVersion": "2.1"
     },
     {
       "name": "flutter_test",
@@ -74,16 +92,16 @@
       "languageVersion": "2.2"
     },
     {
-      "name": "google_maps_flutter",
-      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/google_maps_flutter-1.0.6",
+      "name": "flutter_web_plugins",
+      "rootUri": "file:///C:/flutter/packages/flutter_web_plugins",
       "packageUri": "lib/",
-      "languageVersion": "2.1"
+      "languageVersion": "2.0"
     },
     {
-      "name": "google_maps_flutter_platform_interface",
-      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/google_maps_flutter_platform_interface-1.0.4",
+      "name": "js",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/js-0.6.2",
       "packageUri": "lib/",
-      "languageVersion": "2.3"
+      "languageVersion": "2.0"
     },
     {
       "name": "matcher",
@@ -110,6 +128,12 @@
       "languageVersion": "2.1"
     },
     {
+      "name": "quiver",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/quiver-2.1.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "sky_engine",
       "rootUri": "file:///C:/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
@@ -132,12 +156,6 @@
       "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/stream_channel-2.1.0-nullsafety.1",
       "packageUri": "lib/",
       "languageVersion": "2.10"
-    },
-    {
-      "name": "stream_transform",
-      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/stream_transform-1.2.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.6"
     },
     {
       "name": "string_scanner",
@@ -176,7 +194,6 @@
       "languageVersion": "2.7"
     }
   ],
-  "generated": "2020-11-16T15:27:14.875051Z",
   "generator": "pub",
-  "generatorVersion": "2.10.3"
+  "generatorVersion": "2.10.2"
 }
