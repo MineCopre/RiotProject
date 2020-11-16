@@ -1,13 +1,16 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
-  //SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
+
   runApp(MyApp());
 }
 
@@ -48,6 +51,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Completer<GoogleMapController> _controller = Completer();
+
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
+
+  static final CameraPosition _kLake = CameraPosition(
+      bearing: 192.8334901395799,
+      target: LatLng(37.43296265331129, -122.08832357078792),
+      tilt: 59.440717697143555,
+      zoom: 19.151926040649414);
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -56,103 +72,79 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    /*
-    return Scaffold(
-      appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          //title: Text(widget.title),
-          toolbarHeight: MediaQuery.of(context).size.height * 0.1,
-          actions: [
-            new Image.asset('assets/images/balloon.png'),
-          ],
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Image.asset('assets/images/balloon.png'),
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-    */
+
     return MaterialApp(
-        title: 'Baloon Control',
+        title: 'Balloon Control',
         home: Scaffold(
-          appBar: PreferredSize(
-              preferredSize: Size.fromHeight(
-                  MediaQuery.of(context).size.height *
-                      0.25), // here the desired height
-              child: AppBar(
-                  backgroundColor: Color(0xFF2E8BC0),
-                  //backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15)),
-                  flexibleSpace: Container(
-                    child: Image.asset(
-                      'assets/images/balloon.png',
+            appBar: PreferredSize(
+                preferredSize: Size.fromHeight(
+                    MediaQuery.of(context).size.height *
+                        0.25), //Adaptive height
+                child: AppBar(
+                    backgroundColor: Color(0xFF2E8BC0),
+                    //backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    flexibleSpace: Container(
+                      child: Image.asset(
+                        'assets/images/balloon.png',
+                      ),
+                      padding: const EdgeInsets.all(30),
+                    ))),
+            //Full background for balloon image
+            body: Container(
+                color: Colors.white,
+                //Column where the text and cards will stay
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding:
+                          const EdgeInsets.only(top: 50, bottom: 50, left: 20),
+                      child: AutoSizeText(
+                        'Real-Time Data: ',
+                        style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25),
+                        minFontSize: 20,
+                        maxLines: 1,
+                      ),
+                      alignment: Alignment.centerLeft,
                     ),
-                    padding: const EdgeInsets.all(30),
-                  ))),
-          //Full background for balloon image
-          /*body: Container(
-            child: Container(
-              //Set the image to the balloon
-              /*child: Image.asset(
-                'assets/images/balloon.png',
-              ),*/
+                    new Expanded(
+                        //Each "card" is wrapped by a container
 
-              child: Row(
-                children: [
-                  Image.asset('assets/images/balloon.png', scale: 20),
-                  Image.asset('assets/images/balloon.png', scale: 20)
-                ],
-              ),
-
-              //Scale of the balloon
-              padding: const EdgeInsets.all(40),
-
-              alignment: Alignment.topCenter,
-              //Have the balloon changing depending on the size of the phone
-              height: MediaQuery.of(context).size.height * 0.35,
-
-              //Blue background behind balloon
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Color(0xFF2E8BC0)),
-            ),
-            //Because the blue background has a borderRadius, we need this to match the colors
-            color: Colors.white),
-      ),*/
-        ));
+                        child: GridView.count(
+                      scrollDirection: Axis.horizontal,
+                      primary: false,
+                      padding: const EdgeInsets.all(20),
+                      mainAxisSpacing: MediaQuery.of(context).size.width * 0.2,
+                      crossAxisCount: 1,
+                      children: <Widget>[
+                        Container(
+                          decoration: new BoxDecoration(
+                              color: Color(0xFF2E8BC0),
+                              borderRadius: new BorderRadius.circular(15)),
+                          padding: const EdgeInsets.all(8),
+                          child: new Center(child: new Text("Temperature")),
+                        ),
+                        Container(
+                          decoration: new BoxDecoration(
+                              color: Color(0xFF2E8BC0),
+                              borderRadius: new BorderRadius.circular(15)),
+                          padding: const EdgeInsets.all(8),
+                          child: new Center(child: new Text("Humidity")),
+                        ),
+                        GoogleMap(
+                          mapType: MapType.hybrid,
+                          initialCameraPosition: _kGooglePlex,
+                          onMapCreated: (GoogleMapController controller) {
+                            _controller.complete(controller);
+                          },
+                        )
+                      ],
+                    ))
+                  ],
+                ))));
   }
 }

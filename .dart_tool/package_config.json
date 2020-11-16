@@ -8,6 +8,12 @@
       "languageVersion": "2.10"
     },
     {
+      "name": "auto_size_text",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/auto_size_text-2.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "boolean_selector",
       "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/boolean_selector-2.1.0-nullsafety.1",
       "packageUri": "lib/",
@@ -56,10 +62,28 @@
       "languageVersion": "2.10"
     },
     {
+      "name": "flutter_plugin_android_lifecycle",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-1.0.11",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///C:/flutter/packages/flutter_test",
       "packageUri": "lib/",
       "languageVersion": "2.2"
+    },
+    {
+      "name": "google_maps_flutter",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/google_maps_flutter-1.0.6",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "google_maps_flutter_platform_interface",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/google_maps_flutter_platform_interface-1.0.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.3"
     },
     {
       "name": "matcher",
@@ -78,6 +102,12 @@
       "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/path-1.8.0-nullsafety.1",
       "packageUri": "lib/",
       "languageVersion": "2.10"
+    },
+    {
+      "name": "plugin_platform_interface",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/plugin_platform_interface-1.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
     },
     {
       "name": "sky_engine",
@@ -102,6 +132,12 @@
       "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/stream_channel-2.1.0-nullsafety.1",
       "packageUri": "lib/",
       "languageVersion": "2.10"
+    },
+    {
+      "name": "stream_transform",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/stream_transform-1.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.6"
     },
     {
       "name": "string_scanner",
@@ -140,6 +176,7 @@
       "languageVersion": "2.7"
     }
   ],
+  "generated": "2020-11-16T14:37:59.637926Z",
   "generator": "pub",
-  "generatorVersion": "2.10.2"
+  "generatorVersion": "2.10.3"
 }

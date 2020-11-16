@@ -24,6 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  google_maps_flutter : ^1.0.6
+  auto_size_text: ^2.1.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -44,6 +46,27 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: fonts/Roboto-Black.ttf
+        - asset: fonts/Roboto-BlackItalic.ttf
+        - asset: fonts/Roboto-Bold.ttf
+        - asset: fonts/Roboto-BoldItalic.ttf
+        - asset: fonts/Roboto-Italic.ttf
+        - asset: fonts/Roboto-Light.ttf
+        - asset: fonts/Roboto-LightItalic.ttf
+        - asset: fonts/Roboto-Medium.ttf
+        - asset: fonts/Roboto-MediumItalic.ttf
+        - asset: fonts/Roboto-Regular.ttf
+        - asset: fonts/Roboto-Thin.ttf
+        - asset: fonts/Roboto-ThinItalic.ttf
+    - family: Goldman
+      fonts:
+        - asset: fonts/Goldman-Bold.ttf
+        - asset: fonts/Goldman-Regular.ttf
+        
+        
   assets: 
     - assets/images/balloon.png
   # To add assets to your application, add an assets section, like this:
