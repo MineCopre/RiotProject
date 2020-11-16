@@ -54,15 +54,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Completer<GoogleMapController> _controller = Completer();
 
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+    target: LatLng(53.556342, 10.021588),
     zoom: 14.4746,
   );
-
-  static final CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
 
   @override
   Widget build(BuildContext context) {
@@ -115,12 +109,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         //Each "card" is wrapped by a container
 
                         child: GridView.count(
-                      scrollDirection: Axis.horizontal,
-                      primary: false,
-                      padding: const EdgeInsets.all(20),
-                      mainAxisSpacing: MediaQuery.of(context).size.width * 0.2,
-                      crossAxisCount: 1,
-                      children: <Widget>[
+                        scrollDirection: Axis.horizontal,
+                        primary: false,
+                        padding: const EdgeInsets.all(20),
+                        mainAxisSpacing: MediaQuery.of(context).size.width * 0.2,
+                        crossAxisCount: 1,
+                        children: <Widget>[
                         Container(
                           decoration: new BoxDecoration(
                               color: Color(0xFF2E8BC0),
@@ -135,13 +129,21 @@ class _MyHomePageState extends State<MyHomePage> {
                           padding: const EdgeInsets.all(8),
                           child: new Center(child: new Text("Humidity")),
                         ),
-                        GoogleMap(
-                          mapType: MapType.hybrid,
-                          initialCameraPosition: _kGooglePlex,
-                          onMapCreated: (GoogleMapController controller) {
-                            _controller.complete(controller);
-                          },
-                        )
+                        Container(
+                            decoration: new BoxDecoration(
+                                color: Color(0xFF2E8BC0),
+                                borderRadius: new BorderRadius.circular(15)),
+                            padding: const EdgeInsets.all(8),
+                            child: GoogleMap(
+                              mapType: MapType.terrain,
+                              compassEnabled: true,
+                              myLocationButtonEnabled: true,
+                              myLocationEnabled: true,
+                              initialCameraPosition: _kGooglePlex,
+                              onMapCreated: (GoogleMapController controller) {
+                                _controller.complete(controller);
+                              },
+                            ))
                       ],
                     ))
                   ],
