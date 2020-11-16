@@ -3,12 +3,16 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-void main() {
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
-
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -49,14 +53,30 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final fb = FirebaseDatabase.instance;
+  final myController = TextEditingController();
+  final name = 'Name';
+  var retrievedName;
+  var temperature;
+  var humidity;
+
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final ref = fb.reference();
+    ref.child("Temperature").once().then((DataSnapshot data) {
+      //print(data.value);
+      //print(data.key);
+      setState(() {
+        temperature = data.value;
+      });
+    });
+    ref.child("Humidity").once().then((DataSnapshot data) {
+      //print(data.value);
+      //print(data.key);
+      setState(() {
+        humidity = data.value;
+      });
+    });
 
     return MaterialApp(
         title: 'Balloon Control',
@@ -109,21 +129,46 @@ class _MyHomePageState extends State<MyHomePage> {
                         Container(
                           decoration: new BoxDecoration(
                               color: Color(0xFF2E8BC0),
+                              //color: Colors.red,
                               borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
-                          child: new Center(child: new Text("Temperature")),
+                          child: new Center(
+                            child:
+                                new Text("Temperature\n" + temperature + "ºC"),
+                          ),
                         ),
                         Container(
                           decoration: new BoxDecoration(
                               color: Color(0xFF2E8BC0),
                               borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
-                          child: new Center(child: new Text("Humidity")),
+                          child: new Center(
+                              child: new Text("Humidity\n" + humidity + "%")),
                         )
                       ],
-                    )),
-                    Container(),
+                    )) /*,
+                    RaisedButton(
+                      onPressed: () {
+                        ref
+                            .child("Temperature")
+                            .once()
+                            .then((DataSnapshot data) {
+                          print(data.value);
+                          print(data.key);
+                          setState(() {
+                            temperature = data.value;
+                          });
+                        });
+                      },
+                      child: Text("Get"),
+                    )*/
                   ],
                 ))));
+  }
+
+  @override
+  void dispose() {
+    myController.dispose();
+    super.dispose();
   }
 }
