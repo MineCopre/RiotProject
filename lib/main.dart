@@ -78,13 +78,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     ))),
             //Full background for balloon image
             body: Container(
+                height: MediaQuery.of(context).size.height * 0.4,
                 color: Colors.white,
                 //Column where the text and cards will stay
                 child: Column(
                   children: <Widget>[
                     Container(
-                      padding:
-                          const EdgeInsets.only(top: 50, bottom: 50, left: 20),
+                      padding: const EdgeInsets.only(
+                          top: 20, bottom: 0, left: 20, right: 10),
                       child: AutoSizeText(
                         'Real-Time Data: ',
                         style: const TextStyle(
@@ -98,14 +99,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     new Expanded(
                         //Each "card" is wrapped by a container
-
                         child: GridView.count(
-                        scrollDirection: Axis.horizontal,
-                        primary: false,
-                        padding: const EdgeInsets.all(20),
-                        mainAxisSpacing: MediaQuery.of(context).size.width * 0.2,
-                        crossAxisCount: 1,
-                        children: <Widget>[
+                      scrollDirection: Axis.horizontal,
+                      primary: false,
+                      padding: const EdgeInsets.all(10),
+                      mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
+                      crossAxisCount: 1,
+                      children: <Widget>[
                         Container(
                           decoration: new BoxDecoration(
                               color: Color(0xFF2E8BC0),
@@ -121,11 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: new Center(child: new Text("Humidity")),
                         )
                       ],
-                    ))
+                    )),
+                    Container(),
                   ],
-                )
-            )
-        )
-    );
+                ))));
   }
 }
