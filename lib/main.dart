@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -53,21 +55,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-<<<<<<< HEAD
-  Completer<GoogleMapController> _controller = Completer();
-
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(53.556342, 10.021588),
-    zoom: 14.4746,
-  );
-=======
   final fb = FirebaseDatabase.instance;
   final myController = TextEditingController();
   final name = 'Name';
   var retrievedName;
   var temperature;
   var humidity;
->>>>>>> f8f24ecd5cb118ba5de1189631225cfd8d63b618
+  Completer<GoogleMapController> _controller = Completer();
+
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(53.556342, 10.021588),
+    zoom: 14.4746,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -127,64 +126,51 @@ class _MyHomePageState extends State<MyHomePage> {
                       alignment: Alignment.centerLeft,
                     ),
                     new Expanded(
-                        //Each "card" is wrapped by a container
+                      //Each "card" is wrapped by a container
                         child: GridView.count(
-<<<<<<< HEAD
-                        scrollDirection: Axis.horizontal,
-                        primary: false,
-                        padding: const EdgeInsets.all(20),
-                        mainAxisSpacing: MediaQuery.of(context).size.width * 0.2,
-                        crossAxisCount: 1,
-                        children: <Widget>[
-=======
-                      scrollDirection: Axis.horizontal,
-                      primary: false,
-                      padding: const EdgeInsets.all(10),
-                      mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
-                      crossAxisCount: 1,
-                      children: <Widget>[
->>>>>>> f8f24ecd5cb118ba5de1189631225cfd8d63b618
-                        Container(
-                          decoration: new BoxDecoration(
-                              color: Color(0xFF2E8BC0),
-                              //color: Colors.red,
-                              borderRadius: new BorderRadius.circular(15)),
-                          padding: const EdgeInsets.all(8),
-                          child: new Center(
-                            child:
+                          scrollDirection: Axis.horizontal,
+                          primary: false,
+                          padding: const EdgeInsets.all(10),
+                          mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
+                          crossAxisCount: 1,
+                          children: <Widget>[
+                            Container(
+                              decoration: new BoxDecoration(
+                                  color: Color(0xFF2E8BC0),
+                                  //color: Colors.red,
+                                  borderRadius: new BorderRadius.circular(15)),
+                              padding: const EdgeInsets.all(8),
+                              child: new Center(
+                                child:
                                 new Text("Temperature\n" + temperature + "ºC"),
-                          ),
-                        ),
-                        Container(
-                          decoration: new BoxDecoration(
-                              color: Color(0xFF2E8BC0),
-                              borderRadius: new BorderRadius.circular(15)),
-                          padding: const EdgeInsets.all(8),
-<<<<<<< HEAD
-                          child: new Center(child: new Text("Humidity")),
-                        ),
-                        Container(
-                            decoration: new BoxDecoration(
-                                color: Color(0xFF2E8BC0),
-                                borderRadius: new BorderRadius.circular(15)),
-                            padding: const EdgeInsets.all(8),
-                            child: GoogleMap(
-                              mapType: MapType.terrain,
-                              compassEnabled: true,
-                              myLocationButtonEnabled: true,
-                              myLocationEnabled: true,
-                              initialCameraPosition: _kGooglePlex,
-                              onMapCreated: (GoogleMapController controller) {
-                                _controller.complete(controller);
-                              },
-                            ))
-=======
-                          child: new Center(
-                              child: new Text("Humidity\n" + humidity + "%")),
-                        )
->>>>>>> f8f24ecd5cb118ba5de1189631225cfd8d63b618
-                      ],
-                    )) /*,
+                              ),
+                            ),
+                            Container(
+                              decoration: new BoxDecoration(
+                                  color: Color(0xFF2E8BC0),
+                                  borderRadius: new BorderRadius.circular(15)),
+                              padding: const EdgeInsets.all(8),
+
+                              child: new Center(
+                                  child: new Text("Humidity\n" + humidity + "%")),
+                            ),
+                            Container(
+                                decoration: new BoxDecoration(
+                                    color: Color(0xFF2E8BC0),
+                                    borderRadius: new BorderRadius.circular(15)),
+                                padding: const EdgeInsets.all(8),
+                                child: GoogleMap(
+                                  mapType: MapType.terrain,
+                                  compassEnabled: true,
+                                  myLocationButtonEnabled: true,
+                                  myLocationEnabled: true,
+                                  initialCameraPosition: _kGooglePlex,
+                                  onMapCreated: (GoogleMapController controller) {
+                                    _controller.complete(controller);
+                                  },
+                                ))
+                          ],
+                        )) /*,
                     RaisedButton(
                       onPressed: () {
                         ref

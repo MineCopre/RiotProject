@@ -9,14 +9,12 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="riot_projekt"
         android:icon="@mipmap/ic_launcher">
-<<<<<<< HEAD
 
 
         <meta-data android:name="com.google.android.geo.API_KEY"
                    android:value="AIzaSyCyVwWbdj_6VWMjkgIBsChCTuTpJBYT60k"/>
 
-=======
->>>>>>> f8f24ecd5cb118ba5de1189631225cfd8d63b618
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
