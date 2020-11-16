@@ -59,6 +59,12 @@ class _MyHomePageState extends State<MyHomePage> {
   var retrievedName;
   var temperature;
   var humidity;
+  Completer<GoogleMapController> _controller = Completer();
+
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(53.556342, 10.021588),
+    zoom: 14.4746,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -142,9 +148,25 @@ class _MyHomePageState extends State<MyHomePage> {
                               color: Color(0xFF2E8BC0),
                               borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
+
                           child: new Center(
                               child: new Text("Humidity\n" + humidity + "%")),
                         )
+                        Container(
+                            decoration: new BoxDecoration(
+                                color: Color(0xFF2E8BC0),
+                                borderRadius: new BorderRadius.circular(15)),
+                            padding: const EdgeInsets.all(8),
+                            child: GoogleMap(
+                              mapType: MapType.terrain,
+                              compassEnabled: true,
+                              myLocationButtonEnabled: true,
+                              myLocationEnabled: true,
+                              initialCameraPosition: _kGooglePlex,
+                              onMapCreated: (GoogleMapController controller) {
+                                _controller.complete(controller);
+                              },
+                            ))
                       ],
                     )) /*,
                     RaisedButton(
