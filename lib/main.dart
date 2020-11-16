@@ -1,16 +1,18 @@
 import 'dart:io';
-import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-void main() {
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
-
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -51,21 +53,39 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+<<<<<<< HEAD
   Completer<GoogleMapController> _controller = Completer();
 
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(53.556342, 10.021588),
     zoom: 14.4746,
   );
+=======
+  final fb = FirebaseDatabase.instance;
+  final myController = TextEditingController();
+  final name = 'Name';
+  var retrievedName;
+  var temperature;
+  var humidity;
+>>>>>>> f8f24ecd5cb118ba5de1189631225cfd8d63b618
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final ref = fb.reference();
+    ref.child("Temperature").once().then((DataSnapshot data) {
+      //print(data.value);
+      //print(data.key);
+      setState(() {
+        temperature = data.value;
+      });
+    });
+    ref.child("Humidity").once().then((DataSnapshot data) {
+      //print(data.value);
+      //print(data.key);
+      setState(() {
+        humidity = data.value;
+      });
+    });
 
     return MaterialApp(
         title: 'Balloon Control',
@@ -87,13 +107,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     ))),
             //Full background for balloon image
             body: Container(
+                height: MediaQuery.of(context).size.height * 0.4,
                 color: Colors.white,
                 //Column where the text and cards will stay
                 child: Column(
                   children: <Widget>[
                     Container(
-                      padding:
-                          const EdgeInsets.only(top: 50, bottom: 50, left: 20),
+                      padding: const EdgeInsets.only(
+                          top: 20, bottom: 0, left: 20, right: 10),
                       child: AutoSizeText(
                         'Real-Time Data: ',
                         style: const TextStyle(
@@ -107,26 +128,39 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     new Expanded(
                         //Each "card" is wrapped by a container
-
                         child: GridView.count(
+<<<<<<< HEAD
                         scrollDirection: Axis.horizontal,
                         primary: false,
                         padding: const EdgeInsets.all(20),
                         mainAxisSpacing: MediaQuery.of(context).size.width * 0.2,
                         crossAxisCount: 1,
                         children: <Widget>[
+=======
+                      scrollDirection: Axis.horizontal,
+                      primary: false,
+                      padding: const EdgeInsets.all(10),
+                      mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
+                      crossAxisCount: 1,
+                      children: <Widget>[
+>>>>>>> f8f24ecd5cb118ba5de1189631225cfd8d63b618
                         Container(
                           decoration: new BoxDecoration(
                               color: Color(0xFF2E8BC0),
+                              //color: Colors.red,
                               borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
-                          child: new Center(child: new Text("Temperature")),
+                          child: new Center(
+                            child:
+                                new Text("Temperature\n" + temperature + "ºC"),
+                          ),
                         ),
                         Container(
                           decoration: new BoxDecoration(
                               color: Color(0xFF2E8BC0),
                               borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
+<<<<<<< HEAD
                           child: new Center(child: new Text("Humidity")),
                         ),
                         Container(
@@ -144,9 +178,35 @@ class _MyHomePageState extends State<MyHomePage> {
                                 _controller.complete(controller);
                               },
                             ))
+=======
+                          child: new Center(
+                              child: new Text("Humidity\n" + humidity + "%")),
+                        )
+>>>>>>> f8f24ecd5cb118ba5de1189631225cfd8d63b618
                       ],
-                    ))
+                    )) /*,
+                    RaisedButton(
+                      onPressed: () {
+                        ref
+                            .child("Temperature")
+                            .once()
+                            .then((DataSnapshot data) {
+                          print(data.value);
+                          print(data.key);
+                          setState(() {
+                            temperature = data.value;
+                          });
+                        });
+                      },
+                      child: Text("Get"),
+                    )*/
                   ],
                 ))));
+  }
+
+  @override
+  void dispose() {
+    myController.dispose();
+    super.dispose();
   }
 }
