@@ -59,10 +59,23 @@ class _MyHomePageState extends State<MyHomePage> {
   var temperature;
   var humidity;
 
-
   @override
   Widget build(BuildContext context) {
     final ref = fb.reference();
+    ref.child("Temperature").once().then((DataSnapshot data) {
+      //print(data.value);
+      //print(data.key);
+      setState(() {
+        temperature = data.value;
+      });
+    });
+    ref.child("Humidity").once().then((DataSnapshot data) {
+      //print(data.value);
+      //print(data.key);
+      setState(() {
+        humidity = data.value;
+      });
+    });
 
     return MaterialApp(
         title: 'Balloon Control',
@@ -144,20 +157,27 @@ class _MyHomePageState extends State<MyHomePage> {
                               //color: Colors.red,
                               borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
-                          child: new Center(child: new Text("Temperature")),
+                          child: new Center(
+                            child:
+                                new Text("Temperature\n" + temperature + "ºC"),
+                          ),
                         ),
                         Container(
                           decoration: new BoxDecoration(
                               color: Color(0xFF2E8BC0),
                               borderRadius: new BorderRadius.circular(15)),
                           padding: const EdgeInsets.all(8),
-                          child: new Center(child: new Text("Humidity")),
+                          child: new Center(
+                              child: new Text("Humidity\n" + humidity + "%")),
                         )
                       ],
                     )),
                     RaisedButton(
                       onPressed: () {
-                        ref.child("Temperature").once().then((DataSnapshot data) {
+                        ref
+                            .child("Temperature")
+                            .once()
+                            .then((DataSnapshot data) {
                           print(data.value);
                           print(data.key);
                           setState(() {
