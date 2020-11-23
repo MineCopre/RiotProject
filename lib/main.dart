@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -57,36 +58,157 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final fb = FirebaseDatabase.instance;
   final myController = TextEditingController();
-  final name = 'Name';
-  var retrievedName;
-  var temperature;
-  var humidity;
-  Completer<GoogleMapController> _controller = Completer();
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(53.556342, 10.021588),
-    zoom: 14.4746,
-  );
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  MarkerId selectedMarker;
+  int markerCount = 1;
+  static LatLng _latLng;
+  BitmapDescriptor redMarker;
+
+  var retrievedName;
+  var _temperature;
+  var _humidity;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final ref = fb.reference();
     ref.child("Temperature").once().then((DataSnapshot data) {
-      //print(data.value);
-      //print(data.key);
       setState(() {
-        temperature = data.value;
+        _temperature = data.value;
       });
     });
     ref.child("Humidity").once().then((DataSnapshot data) {
-      //print(data.value);
-      //print(data.key);
       setState(() {
-        humidity = data.value;
+        _humidity = data.value;
+      });
+    });
+    ref.child("mapY").once().then((DataSnapshot data) {
+      setState(() {
+        double lng = data.value;
+        ref.child("mapX").once().then((DataSnapshot data) {
+          setState(() {
+            _latLng = LatLng(data.value, lng);
+          });
+        });
       });
     });
 
+    //Map functions
+
+    Completer<GoogleMapController> _controller = Completer();
+
+    Future _changeDefaultMarker(LatLng latlng) async {
+      setState(() {
+        final MarkerId markerId = MarkerId("DefaultMarker");
+        print(markers.length.toString());
+        Marker marker = Marker(
+          markerId: markerId,
+          position: latlng,
+          draggable: true,
+          icon: BitmapDescriptor.defaultMarker,
+        );
+        markers[markerId] = marker;
+      });
+    }
+
+    Future _secondTypeMarker(LatLng latlng) async{
+      setState(() {
+        final MarkerId markerId = MarkerId(markers.length.toString());
+        print(markers.length.toString());
+        Marker marker = Marker(
+          markerId: markerId,
+          position: latlng,
+          draggable: true,
+          icon: BitmapDescriptor.defaultMarkerWithHue(250),
+        );
+        markers[markerId] = marker;
+      });
+    }
+
     return MaterialApp(
+        title: 'Balloon Control',
+        home: Scaffold(
+            appBar: PreferredSize(
+                preferredSize: Size.fromHeight(
+                    MediaQuery.of(context).size.height *
+                        0.25), //Adaptive height
+                child: AppBar(
+                    backgroundColor: Color(0xFF2E8BC0),
+                    //backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    flexibleSpace: Container(
+                      child: Image.asset(
+                        'assets/images/balloon.png',
+                      ),
+                      padding: const EdgeInsets.all(30),
+                    ))),
+            //Full background for balloon image
+            body: Container(
+                height: MediaQuery.of(context).size.height * 0.8,
+                color: Colors.white,
+                //Column where the text and cards will stay
+                child: Column(
+                  children: <Widget>[
+                    new Container(
+                      padding: const EdgeInsets.only(
+                          top: 20, bottom: 0, left: 20, right: 10),
+                      child: AutoSizeText(
+                        'MAP: ',
+                        style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25),
+                        minFontSize: 20,
+                        maxLines: 1,
+                      ),
+                      alignment: Alignment.centerLeft,
+                    ),
+                    new Container(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                            color: Color(0xFF2E8BC0),
+                            borderRadius: BorderRadius.circular(15)),
+                        child: _latLng == null
+                            ? Container(
+                                child: Center(
+                                  child: Text(
+                                    'LOADING MAP...',
+                                    style: TextStyle(fontFamily: 'Roboto', color: Colors.white, fontSize: 25),
+                                  ),
+                                ),
+                              )
+                            : GoogleMap(
+                                mapType: MapType.terrain,
+                                myLocationEnabled: true,
+                                myLocationButtonEnabled: true,
+                                initialCameraPosition: CameraPosition(
+                                  target: _latLng,
+                                  zoom: 14.4746,
+                                ),
+                                onMapCreated: (GoogleMapController controller) {
+                                  _controller.complete(controller);
+                                  _changeDefaultMarker(_latLng);
+                                },
+                                compassEnabled: true,
+                                tiltGesturesEnabled: false,
+                                onTap: (_latLng) {
+                                  _changeDefaultMarker(_latLng);
+                                },
+                                onLongPress: (_latLng){
+                                  _secondTypeMarker(_latLng);
+                                },
+                                markers: Set<Marker>.of(markers.values),
+                              )),
+                  ],
+                ))));
+    /*return MaterialApp(
         title: 'Balloon Control',
         home: Scaffold(
             appBar: PreferredSize(
@@ -142,7 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               padding: const EdgeInsets.all(8),
                               child: new Center(
                                 child:
-                                new Text("Temperature\n" + temperature + "ºC"),
+                                new Text('Temperature\n $_temperature ºC'),
                               ),
                             ),
                             Container(
@@ -152,42 +274,33 @@ class _MyHomePageState extends State<MyHomePage> {
                               padding: const EdgeInsets.all(8),
 
                               child: new Center(
-                                  child: new Text("Humidity\n" + humidity + "%")),
+                                  child: new Text('Humidity\n $_humidity  %')),
                             ),
-                            Container(
-                                decoration: new BoxDecoration(
-                                    color: Color(0xFF2E8BC0),
-                                    borderRadius: new BorderRadius.circular(15)),
-                                padding: const EdgeInsets.all(8),
-                                child: GoogleMap(
-                                  mapType: MapType.terrain,
-                                  compassEnabled: true,
-                                  myLocationButtonEnabled: true,
-                                  myLocationEnabled: true,
-                                  initialCameraPosition: _kGooglePlex,
-                                  onMapCreated: (GoogleMapController controller) {
-                                    _controller.complete(controller);
-                                  },
-                                ))
                           ],
-                        )) /*,
-                    RaisedButton(
-                      onPressed: () {
-                        ref
-                            .child("Temperature")
-                            .once()
-                            .then((DataSnapshot data) {
-                          print(data.value);
-                          print(data.key);
-                          setState(() {
-                            temperature = data.value;
-                          });
-                        });
-                      },
-                      child: Text("Get"),
-                    )*/
+                        )
+                    ),
+                    Container(
+                        decoration: new BoxDecoration(
+                            color: Color(0xFF2E8BC0),
+                            borderRadius: new BorderRadius.circular(15)),
+                        padding: const EdgeInsets.all(0.1),
+                        child: GoogleMap(
+                          mapType: MapType.terrain,
+                          compassEnabled: true,
+                          myLocationButtonEnabled: true,
+                          myLocationEnabled: true,
+                          initialCameraPosition: _kGooglePlex,
+                          onMapCreated: (GoogleMapController controller) {
+                            _controller.complete(controller);
+                          },
+                        )
+                    )
                   ],
-                ))));
+                )
+
+            )
+        )
+    );*/
   }
 
   @override
