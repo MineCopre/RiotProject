@@ -93,3 +93,8 @@ lint/tmp/
 
 #idea
 .idea/
+.dart_tool/package_config.json
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
