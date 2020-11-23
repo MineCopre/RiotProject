@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:riot_projekt/graphs.dart';
 
 void main() async {
@@ -56,6 +57,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final fb = FirebaseDatabase.instance;
   final myController = TextEditingController();
+
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  MarkerId selectedMarker;
+  int markerCount = 1;
+  static LatLng _latLng;
+  BitmapDescriptor redMarker;
+
   final name = 'Name';
   var retrievedName;
   var temperature;
@@ -79,7 +87,47 @@ class _MyHomePageState extends State<MyHomePage> {
         humidity = data.value;
       });
     });
+    ref.child("mapY").once().then((DataSnapshot data) {
+      setState(() {
+        double lng = data.value;
+        ref.child("mapX").once().then((DataSnapshot data) {
+          setState(() {
+            _latLng = LatLng(data.value, lng);
+          });
+        });
+      });
+    });
+    //Map functions
 
+    Completer<GoogleMapController> _controller = Completer();
+
+    Future _changeDefaultMarker(LatLng latlng) async {
+      setState(() {
+        final MarkerId markerId = MarkerId("DefaultMarker");
+        print(markers.length.toString());
+        Marker marker = Marker(
+          markerId: markerId,
+          position: latlng,
+          draggable: true,
+          icon: BitmapDescriptor.defaultMarker,
+        );
+        markers[markerId] = marker;
+      });
+    }
+
+    Future _secondTypeMarker(LatLng latlng) async {
+      setState(() {
+        final MarkerId markerId = MarkerId(markers.length.toString());
+        print(markers.length.toString());
+        Marker marker = Marker(
+          markerId: markerId,
+          position: latlng,
+          draggable: true,
+          icon: BitmapDescriptor.defaultMarkerWithHue(250),
+        );
+        markers[markerId] = marker;
+      });
+    }
     return MaterialApp(
         title: 'Balloon Control',
         home: Scaffold(
@@ -205,7 +253,47 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         )
                       ],
-                    ))
+                    )),
+                    new Container(
+                        height: MediaQuery.of(context).size.height * 0.2,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                            color: Color(0xFF2E8BC0),
+                            borderRadius: BorderRadius.circular(15)),
+                        child: _latLng == null
+                            ? Container(
+                          child: Center(
+                            child: Text(
+                              'LOADING MAP...',
+                              style: TextStyle(
+                                  fontFamily: 'Roboto',
+                                  color: Colors.white,
+                                  fontSize: 25),
+                            ),
+                          ),
+                        )
+                            : GoogleMap(
+                          mapType: MapType.terrain,
+                          myLocationEnabled: true,
+                          myLocationButtonEnabled: true,
+                          initialCameraPosition: CameraPosition(
+                            target: _latLng,
+                            zoom: 14.4746,
+                          ),
+                          onMapCreated: (GoogleMapController controller) {
+                            _controller.complete(controller);
+                            _changeDefaultMarker(_latLng);
+                          },
+                          compassEnabled: true,
+                          tiltGesturesEnabled: false,
+                          onTap: (_latLng) {
+                            _changeDefaultMarker(_latLng);
+                          },
+                          onLongPress: (_latLng) {
+                            _secondTypeMarker(_latLng);
+                          },
+                          markers: Set<Marker>.of(markers.values),
+                        )),
                   ],
                 ))));
   }
