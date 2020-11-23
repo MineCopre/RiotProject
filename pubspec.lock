@@ -128,6 +128,7 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+<<<<<<< HEAD
   google_maps_flutter:
     dependency: "direct main"
     description:
@@ -141,7 +142,8 @@ packages:
       name: google_maps_flutter_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.5"
+    version: "1.0.4"
+=======
   intl:
     dependency: transitive
     description:
@@ -149,6 +151,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
+>>>>>>> 567308b0a96ba1363a3cd5d90354849570c3dc5f
   js:
     dependency: transitive
     description:
@@ -268,4 +271,4 @@ packages:
     version: "2.1.0-nullsafety.3"
 sdks:
   dart: ">=2.10.0-110 <2.11.0"
-  flutter: ">=1.22.0 <2.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"

@@ -10,6 +10,7 @@
         android:label="riot_projekt"
         android:icon="@mipmap/ic_launcher">
 
+
         <meta-data android:name="com.google.android.geo.API_KEY"
                    android:value="AIzaSyCyVwWbdj_6VWMjkgIBsChCTuTpJBYT60k"/>
 
