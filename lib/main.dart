@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riot_projekt/graphs.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -63,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final ref = fb.reference();
+
     ref.child("Temperature").once().then((DataSnapshot data) {
       //print(data.value);
       //print(data.key);
@@ -126,62 +128,82 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
                       crossAxisCount: 1,
                       children: <Widget>[
-                        Container(
-                          decoration: new BoxDecoration(
-                              color: Color(0xFFB1D4E0),
-                              //color: Colors.red,
-                              borderRadius: new BorderRadius.circular(15)),
-                          padding: const EdgeInsets.all(8),
-                          child: Center(
-                            child: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(children: <TextSpan>[
-                                  TextSpan(
-                                      text: "Temperature\n\n",
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        Graphs.withSampleTemperature()));
+                            print("Temperature");
+                          },
+                          child: Container(
+                            decoration: new BoxDecoration(
+                                color: Color(0xFFB1D4E0),
+                                //color: Colors.red,
+                                borderRadius: new BorderRadius.circular(15)),
+                            padding: const EdgeInsets.all(8),
+                            child: Center(
+                              child: RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(children: <TextSpan>[
+                                    TextSpan(
+                                        text: "Temperature\n\n",
+                                        style: TextStyle(
+                                            fontFamily: "Roboto",
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            color: Color(0xFF0C2D48))),
+                                    TextSpan(
+                                      text: "$temperatureº",
                                       style: TextStyle(
                                           fontFamily: "Roboto",
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                          color: Color(0xFF0C2D48))),
-                                  TextSpan(
-                                    text: "$temperatureº",
-                                    style: TextStyle(
-                                        fontFamily: "Roboto",
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 30,
-                                        color: Color(0xFF0C2D48)),
-                                  )
-                                ])),
+                                          fontSize: 30,
+                                          color: Color(0xFF0C2D48)),
+                                    )
+                                  ])),
+                            ),
                           ),
                         ),
-                        Container(
-                          decoration: new BoxDecoration(
-                              color: Color(0xFFB1D4E0),
-                              //color: Colors.red,
-                              borderRadius: new BorderRadius.circular(15)),
-                          padding: const EdgeInsets.all(8),
-                          child: Center(
-                            child: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(children: <TextSpan>[
-                                  TextSpan(
-                                      text: "Humidity\n\n",
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        Graphs.withSampleHumidity()));
+                            print("Humidity");
+                          },
+                          child: Container(
+                            decoration: new BoxDecoration(
+                                color: Color(0xFFB1D4E0),
+                                //color: Colors.red,
+                                borderRadius: new BorderRadius.circular(15)),
+                            padding: const EdgeInsets.all(8),
+                            child: Center(
+                              child: RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(children: <TextSpan>[
+                                    TextSpan(
+                                        text: "Humidity\n\n",
+                                        style: TextStyle(
+                                            fontFamily: "Roboto",
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            color: Color(0xFF0C2D48))),
+                                    TextSpan(
+                                      text: "$humidity%",
                                       style: TextStyle(
                                           fontFamily: "Roboto",
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                          color: Color(0xFF0C2D48))),
-                                  TextSpan(
-                                    text: "$humidity%",
-                                    style: TextStyle(
-                                        fontFamily: "Roboto",
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 30,
-                                        color: Color(0xFF0C2D48)),
-                                  )
-                                ])),
+                                          fontSize: 30,
+                                          color: Color(0xFF0C2D48)),
+                                    )
+                                  ])),
+                            ),
                           ),
-                        ),
+                        )
                       ],
                     ))
                   ],
