@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riot_projekt/graphs.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -62,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final ref = fb.reference();
+
     ref.child("Temperature").once().then((DataSnapshot data) {
       //print(data.value);
       //print(data.key);
@@ -97,13 +100,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     ))),
             //Full background for balloon image
             body: Container(
+                height: MediaQuery.of(context).size.height * 0.4,
                 color: Colors.white,
                 //Column where the text and cards will stay
                 child: Column(
                   children: <Widget>[
                     Container(
-                      padding:
-                          const EdgeInsets.only(top: 20, bottom: 0, left: 20),
+                      padding: const EdgeInsets.only(
+                          top: 20, bottom: 0, left: 20, right: 10),
                       child: AutoSizeText(
                         'Real-Time Data: ',
                         style: const TextStyle(
@@ -115,77 +119,93 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       alignment: Alignment.centerLeft,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Text(name),
-                        Flexible(child: TextField(controller: myController)),
-                      ],
-                    ),
-                    RaisedButton(
-                      onPressed: () {
-                        ref.child(name).set(myController.text);
-                      },
-                      child: Text("Submit"),
-                    ),
-                    RaisedButton(
-                      onPressed: () {
-                        ref.child("Name").once().then((DataSnapshot data) {
-                          print(data.value);
-                          print(data.key);
-                          setState(() {
-                            retrievedName = data.value;
-                          });
-                        });
-                      },
-                      child: Text("Get"),
-                    ),
-                    Text(retrievedName ?? "name"),
                     new Expanded(
                         //Each "card" is wrapped by a container
-
                         child: GridView.count(
                       scrollDirection: Axis.horizontal,
                       primary: false,
-                      padding: const EdgeInsets.all(20),
-                      mainAxisSpacing: MediaQuery.of(context).size.width * 0.2,
+                      padding: const EdgeInsets.all(10),
+                      mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
                       crossAxisCount: 1,
                       children: <Widget>[
-                        Container(
-                          decoration: new BoxDecoration(
-                              color: Color(0xFF2E8BC0),
-                              //color: Colors.red,
-                              borderRadius: new BorderRadius.circular(15)),
-                          padding: const EdgeInsets.all(8),
-                          child: new Center(
-                            child: Text("Temperature\n$temperatureºC"),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        Graphs.withSampleTemperature()));
+                            print("Temperature");
+                          },
+                          child: Container(
+                            decoration: new BoxDecoration(
+                                color: Color(0xFFB1D4E0),
+                                //color: Colors.red,
+                                borderRadius: new BorderRadius.circular(15)),
+                            padding: const EdgeInsets.all(8),
+                            child: Center(
+                              child: RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(children: <TextSpan>[
+                                    TextSpan(
+                                        text: "Temperature\n\n",
+                                        style: TextStyle(
+                                            fontFamily: "Roboto",
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            color: Color(0xFF0C2D48))),
+                                    TextSpan(
+                                      text: "$temperatureº",
+                                      style: TextStyle(
+                                          fontFamily: "Roboto",
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 30,
+                                          color: Color(0xFF0C2D48)),
+                                    )
+                                  ])),
+                            ),
                           ),
                         ),
-                        Container(
-                          decoration: new BoxDecoration(
-                              color: Color(0xFF2E8BC0),
-                              borderRadius: new BorderRadius.circular(15)),
-                          padding: const EdgeInsets.all(8),
-                          child: new Center(
-                              child: new Text("Humidity\n$humidity%")),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        Graphs.withSampleHumidity()));
+                            print("Humidity");
+                          },
+                          child: Container(
+                            decoration: new BoxDecoration(
+                                color: Color(0xFFB1D4E0),
+                                //color: Colors.red,
+                                borderRadius: new BorderRadius.circular(15)),
+                            padding: const EdgeInsets.all(8),
+                            child: Center(
+                              child: RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(children: <TextSpan>[
+                                    TextSpan(
+                                        text: "Humidity\n\n",
+                                        style: TextStyle(
+                                            fontFamily: "Roboto",
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            color: Color(0xFF0C2D48))),
+                                    TextSpan(
+                                      text: "$humidity%",
+                                      style: TextStyle(
+                                          fontFamily: "Roboto",
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 30,
+                                          color: Color(0xFF0C2D48)),
+                                    )
+                                  ])),
+                            ),
+                          ),
                         )
                       ],
-                    )),
-                    RaisedButton(
-                      onPressed: () {
-                        ref
-                            .child("Temperature")
-                            .once()
-                            .then((DataSnapshot data) {
-                          print(data.value);
-                          print(data.key);
-                          setState(() {
-                            temperature = data.value;
-                          });
-                        });
-                      },
-                      child: Text("Get"),
-                    )
+                    ))
                   ],
                 ))));
   }
