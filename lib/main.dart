@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:async';
 
@@ -5,10 +6,14 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+<<<<<<< HEAD
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+=======
+>>>>>>> 567308b0a96ba1363a3cd5d90354849570c3dc5f
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:riot_projekt/graphs.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -72,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final ref = fb.reference();
+
     ref.child("Temperature").once().then((DataSnapshot data) {
       setState(() {
         temperature = data.value;
@@ -167,6 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     new Expanded(
                         //Each "card" is wrapped by a container
                         child: GridView.count(
+<<<<<<< HEAD
                             scrollDirection: Axis.horizontal,
                             primary: false,
                             padding: const EdgeInsets.all(10),
@@ -290,6 +297,92 @@ class _MyHomePageState extends State<MyHomePage> {
                                 },
                                 markers: Set<Marker>.of(markers.values),
                               )),
+=======
+                      scrollDirection: Axis.horizontal,
+                      primary: false,
+                      padding: const EdgeInsets.all(10),
+                      mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
+                      crossAxisCount: 1,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        Graphs.withSampleTemperature()));
+                            print("Temperature");
+                          },
+                          child: Container(
+                            decoration: new BoxDecoration(
+                                color: Color(0xFFB1D4E0),
+                                //color: Colors.red,
+                                borderRadius: new BorderRadius.circular(15)),
+                            padding: const EdgeInsets.all(8),
+                            child: Center(
+                              child: RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(children: <TextSpan>[
+                                    TextSpan(
+                                        text: "Temperature\n\n",
+                                        style: TextStyle(
+                                            fontFamily: "Roboto",
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            color: Color(0xFF0C2D48))),
+                                    TextSpan(
+                                      text: "$temperatureº",
+                                      style: TextStyle(
+                                          fontFamily: "Roboto",
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 30,
+                                          color: Color(0xFF0C2D48)),
+                                    )
+                                  ])),
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        Graphs.withSampleHumidity()));
+                            print("Humidity");
+                          },
+                          child: Container(
+                            decoration: new BoxDecoration(
+                                color: Color(0xFFB1D4E0),
+                                //color: Colors.red,
+                                borderRadius: new BorderRadius.circular(15)),
+                            padding: const EdgeInsets.all(8),
+                            child: Center(
+                              child: RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(children: <TextSpan>[
+                                    TextSpan(
+                                        text: "Humidity\n\n",
+                                        style: TextStyle(
+                                            fontFamily: "Roboto",
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            color: Color(0xFF0C2D48))),
+                                    TextSpan(
+                                      text: "$humidity%",
+                                      style: TextStyle(
+                                          fontFamily: "Roboto",
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 30,
+                                          color: Color(0xFF0C2D48)),
+                                    )
+                                  ])),
+                            ),
+                          ),
+                        )
+                      ],
+                    ))
+>>>>>>> 567308b0a96ba1363a3cd5d90354849570c3dc5f
                   ],
                 ))));
   }
