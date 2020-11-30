@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:intl/intl.dart';
 import 'package:riot_projekt/graphs.dart';
 
 void main() async {
@@ -60,19 +62,47 @@ class _MyHomePageState extends State<MyHomePage> {
   var retrievedName;
   var temperature;
   var humidity;
+  var indexTemp;
 
   @override
   Widget build(BuildContext context) {
     final ref = fb.reference();
-
-    ref.child("Temperature").once().then((DataSnapshot data) {
-      //print(data.value);
-      //print(data.key);
+/*
+    ref.child("temperature").child("index").once().then((DataSnapshot data) {
       setState(() {
-        temperature = data.value;
+        indexTemp = data.value;
       });
     });
-    ref.child("Humidity").once().then((DataSnapshot data) {
+    print(indexTemp);
+    ref.child("temperature").child("value").once().then((DataSnapshot data) {
+      //print(data.value);
+      //print(data.key);
+
+      setState(() {
+        temperature = data.value[indexTemp - 1];
+      });
+    });
+*/
+    ref
+        .child("test")
+        .child("balloons")
+        .child("balloon0")
+        .child("temperature")
+        .limitToLast(1)
+        .once()
+        .then((DataSnapshot data) {
+      setState(() {
+        Map<dynamic, dynamic> values = data.value;
+
+        values.forEach((key, value) {
+          print(value["value"]);
+          //print(readTimeStamp(value["time"]));
+          temperature = value["value"];
+        });
+      });
+    });
+
+    ref.child("humidity").once().then((DataSnapshot data) {
       //print(data.value);
       //print(data.key);
       setState(() {
@@ -135,7 +165,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                 MaterialPageRoute(
                                     builder: (context) =>
                                         Graphs.withSampleTemperature()));
-                            print("Temperature");
+                            print("Temperature\n");
+                            var dateTime = new DateTime.now();
+                            print(dateTime);
                           },
                           child: Container(
                             decoration: new BoxDecoration(
@@ -215,4 +247,11 @@ class _MyHomePageState extends State<MyHomePage> {
     myController.dispose();
     super.dispose();
   }
+}
+
+String readTimeStamp(int timestamp) {
+  var now = DateTime.now();
+  var format = DateFormat('HH:mm a');
+  var date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+  var diff = now.difference(date);
 }
