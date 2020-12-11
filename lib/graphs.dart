@@ -8,7 +8,7 @@ class Graphs extends StatelessWidget {
 
   Graphs(this.seriesList, {this.animate});
 
-  // Create a [TimesSeriesChart] with sample data (no transitions)
+  /// Create a [TimesSeriesChart] with sample data (no transitions)
   factory Graphs.withSampleData() {
     return new Graphs(
       _createSampleData(),

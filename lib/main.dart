@@ -64,25 +64,22 @@ class _MyHomePageState extends State<MyHomePage> {
   var humidity;
   var indexTemp;
 
+  List<String> listTemp = new List();
+
   @override
   Widget build(BuildContext context) {
     final ref = fb.reference();
-/*
-    ref.child("temperature").child("index").once().then((DataSnapshot data) {
-      setState(() {
-        indexTemp = data.value;
-      });
-    });
-    print(indexTemp);
-    ref.child("temperature").child("value").once().then((DataSnapshot data) {
-      //print(data.value);
-      //print(data.key);
+    listTemp.add("Helloooo");
+    ref
+        .child("test")
+        .child("balloons")
+        .child("balloon0")
+        .child("temperature")
+        .limitToLast(1)
+        .once()
+        .then((DataSnapshot data) {});
 
-      setState(() {
-        temperature = data.value[indexTemp - 1];
-      });
-    });
-*/
+    print(listTemp.first + " + " + listTemp.length.toString());
     ref
         .child("test")
         .child("balloons")
@@ -92,13 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
         .once()
         .then((DataSnapshot data) {
       setState(() {
-        Map<dynamic, dynamic> values = data.value;
-
-        values.forEach((key, value) {
-          print(value["value"]);
-          //print(readTimeStamp(value["time"]));
-          temperature = value["value"];
-        });
+        temperature = data.value["value"];
       });
     });
 
