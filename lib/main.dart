@@ -16,6 +16,7 @@ void main() async {
   ));
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(MyApp());
 }
 
@@ -64,22 +65,26 @@ class _MyHomePageState extends State<MyHomePage> {
   var humidity;
   var indexTemp;
 
-  List<String> listTemp = new List();
-
   @override
   Widget build(BuildContext context) {
     final ref = fb.reference();
-    listTemp.add("Helloooo");
-    ref
-        .child("test")
-        .child("balloons")
-        .child("balloon0")
-        .child("temperature")
-        .limitToLast(1)
-        .once()
-        .then((DataSnapshot data) {});
+/*
+    ref.child("temperature").child("index").once().then((DataSnapshot data) {
+      setState(() {
+        indexTemp = data.value;
+      });
+    });
+    print(indexTemp);
+    ref.child("temperature").child("value").once().then((DataSnapshot data) {
+      //print(data.value);
+      //print(data.key);
 
-    print(listTemp.first + " + " + listTemp.length.toString());
+      setState(() {
+        temperature = data.value[indexTemp - 1];
+      });
+    });
+*/
+/*
     ref
         .child("test")
         .child("balloons")
@@ -89,10 +94,16 @@ class _MyHomePageState extends State<MyHomePage> {
         .once()
         .then((DataSnapshot data) {
       setState(() {
-        temperature = data.value["value"];
+        Map<dynamic, dynamic> values = data.value;
+
+        values.forEach((key, value) {
+          //print(value["value"]);
+          //print(readTimeStamp(value["time"]));
+          temperature = value["value"];
+        });
       });
     });
-
+*/
     ref.child("humidity").once().then((DataSnapshot data) {
       //print(data.value);
       //print(data.key);
@@ -149,53 +160,74 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
                       crossAxisCount: 1,
                       children: <Widget>[
+                        FutureBuilder(
+                            future: ref
+                                .child("test")
+                                .child("balloons")
+                                .child("balloon0")
+                                .child("temperature")
+                                .limitToLast(1)
+                                .once(),
+                            builder: (context,
+                                AsyncSnapshot<DataSnapshot> snapshot) {
+                              if (snapshot.hasData) {
+                                Map<dynamic, dynamic> values =
+                                    snapshot.data.value;
+
+                                values.forEach((key, value) {
+                                  print(value["value"]);
+                                  //print(readTimeStamp(value["time"]));
+                                  temperature = value["value"];
+                                });
+                                return new GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Graph.withSampleTemperature()));
+                                    //Graph.getTemperature()));
+                                  },
+                                  child: Container(
+                                    decoration: new BoxDecoration(
+                                        color: Color(0xFFB1D4E0),
+                                        //color: Colors.red,
+                                        borderRadius:
+                                            new BorderRadius.circular(15)),
+                                    padding: const EdgeInsets.all(8),
+                                    child: Center(
+                                      child: RichText(
+                                          textAlign: TextAlign.center,
+                                          text: TextSpan(children: <TextSpan>[
+                                            TextSpan(
+                                                text: "Temperature\n\n",
+                                                style: TextStyle(
+                                                    fontFamily: "Roboto",
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20,
+                                                    color: Color(0xFF0C2D48))),
+                                            TextSpan(
+                                              text: "$temperatureº",
+                                              style: TextStyle(
+                                                  fontFamily: "Roboto",
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 30,
+                                                  color: Color(0xFF0C2D48)),
+                                            )
+                                          ])),
+                                    ),
+                                  ),
+                                );
+                              }
+                              return CircularProgressIndicator();
+                            }),
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        Graphs.withSampleTemperature()));
-                            print("Temperature\n");
-                            var dateTime = new DateTime.now();
-                            print(dateTime);
-                          },
-                          child: Container(
-                            decoration: new BoxDecoration(
-                                color: Color(0xFFB1D4E0),
-                                //color: Colors.red,
-                                borderRadius: new BorderRadius.circular(15)),
-                            padding: const EdgeInsets.all(8),
-                            child: Center(
-                              child: RichText(
-                                  textAlign: TextAlign.center,
-                                  text: TextSpan(children: <TextSpan>[
-                                    TextSpan(
-                                        text: "Temperature\n\n",
-                                        style: TextStyle(
-                                            fontFamily: "Roboto",
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
-                                            color: Color(0xFF0C2D48))),
-                                    TextSpan(
-                                      text: "$temperatureº",
-                                      style: TextStyle(
-                                          fontFamily: "Roboto",
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 30,
-                                          color: Color(0xFF0C2D48)),
-                                    )
-                                  ])),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        Graphs.withSampleHumidity()));
+                                        Graph.withSampleHumidity()));
                             print("Humidity");
                           },
                           child: Container(
@@ -235,14 +267,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight
+    ]);
     myController.dispose();
     super.dispose();
   }
-}
-
-String readTimeStamp(int timestamp) {
-  var now = DateTime.now();
-  var format = DateFormat('HH:mm a');
-  var date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-  var diff = now.difference(date);
 }

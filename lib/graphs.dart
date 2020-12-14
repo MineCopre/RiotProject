@@ -1,25 +1,32 @@
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
-class Graphs extends StatelessWidget {
+class Graph extends StatefulWidget {
   final List<charts.Series> seriesList;
   final bool animate;
 
-  Graphs(this.seriesList, {this.animate});
+  Graph(this.seriesList, {this.animate});
 
   /// Create a [TimesSeriesChart] with sample data (no transitions)
-  factory Graphs.withSampleData() {
-    return new Graphs(
+  factory Graph.withSampleData() {
+    return new Graph(
       _createSampleData(),
       //No animations for test
       animate: false,
     );
   }
 
+  factory Graph.getTemperature() {
+    return new Graph(_databaseTemperature(), animate: true);
+  }
+
   /// Create a [TimesSeriesChart] with sample temperature data (no transitions)
-  factory Graphs.withSampleTemperature() {
-    return new Graphs(
+  factory Graph.withSampleTemperature() {
+    return new Graph(
       _temperatureSampleData(),
       //No animations for test
       animate: false,
@@ -27,45 +34,12 @@ class Graphs extends StatelessWidget {
   }
 
   /// Create a [TimesSeriesChart] with sample humidity data (no transitions)
-  factory Graphs.withSampleHumidity() {
-    return new Graphs(
+  factory Graph.withSampleHumidity() {
+    return new Graph(
       _humiditySampleData(),
       //No animations for test
       animate: false,
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: PreferredSize(
-            preferredSize: Size.fromHeight(
-                MediaQuery.of(context).size.height * 0.25), //Adaptive height
-            child: AppBar(
-                backgroundColor: Color(0xFF2E8BC0),
-                //backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
-                flexibleSpace: Container(
-                  child: Image.asset(
-                    'assets/images/balloon.png',
-                  ),
-                  padding: const EdgeInsets.all(30),
-                ))),
-        body: new Container(
-            padding: EdgeInsets.all(20),
-            child: new charts.TimeSeriesChart(
-              seriesList,
-              animate: animate,
-              behaviors: [
-                new charts.PanAndZoomBehavior(),
-                new charts.SeriesLegend()
-              ],
-              // Optionally pass in a [DateTimeFactory] used by the chart. The factory
-              // should create the same type of [DateTime] as the data provided. If none
-              // specified, the default creates local date time.
-              dateTimeFactory: const charts.LocalDateTimeFactory(),
-            )));
   }
 
   /// Create one series with sample hard coded data.
@@ -86,6 +60,56 @@ class Graphs extends StatelessWidget {
         measureFn: (TimeSeriesSales sales, _) => sales.sales,
         data: data,
       )
+    ];
+  }
+
+  static List<charts.Series<TemperatureValues, DateTime>>
+      _databaseTemperature() {
+    final ref = FirebaseDatabase.instance.reference();
+    final List<dynamic> temps = new List();
+    final List<dynamic> times = new List();
+
+/*
+    ref
+        .child("test")
+        .child("balloons")
+        .child("balloon0")
+        .child("temperature")
+        .once()
+        .then((DataSnapshot snapshot) {
+      //print('Data : ${snapshot.value}');
+      var tempArray = snapshot.value;
+      tempArray.forEach((element) {
+        temps.add(element.value["value"]);
+        times.add(element.value["time"]);
+      });
+    });
+    print(temps.length);
+    */
+
+/*
+      Map<dynamic, dynamic> values = snap.value;
+      values.forEach((key, value) {
+        //print(key + " + " + value);
+        //print(key);
+        order.add(key);
+      });
+    });
+
+    order.sort();
+    order.forEach((element) {
+      print(element);
+    });
+*/
+
+    return [
+      new charts.Series<TemperatureValues, DateTime>(
+          id: 'Temperature',
+          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          domainFn: (TemperatureValues temp, _) => temp.time,
+          measureFn: (TemperatureValues temp, _) => temp.temp,
+          data: null //data,
+          )
     ];
   }
 
@@ -141,6 +165,66 @@ class Graphs extends StatelessWidget {
       )
     ];
   }
+
+  @override
+  State<StatefulWidget> createState() => _Builder(seriesList, animate);
+}
+
+class _Builder extends State<Graph> {
+  final List<charts.Series> seriesList;
+  final bool animate;
+
+  _Builder(this.seriesList, this.animate);
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: PreferredSize(
+            preferredSize: Size.fromHeight(
+                MediaQuery.of(context).size.height * 0.25), //Adaptive height
+            child: AppBar(
+                backgroundColor: Color(0xFF2E8BC0),
+                //backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                flexibleSpace: Container(
+                  child: Image.asset(
+                    'assets/images/balloon.png',
+                  ),
+                  padding: const EdgeInsets.all(30),
+                ))),
+        body: new Container(
+            padding: EdgeInsets.all(20),
+            child: new charts.TimeSeriesChart(
+              seriesList,
+              animate: animate,
+              behaviors: [
+                new charts.PanAndZoomBehavior(),
+                new charts.SeriesLegend()
+              ],
+              // Optionally pass in a [DateTimeFactory] used by the chart. The factory
+              // should create the same type of [DateTime] as the data provided. If none
+              // specified, the default creates local date time.
+              dateTimeFactory: const charts.LocalDateTimeFactory(),
+            )));
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    super.dispose();
+  }
 }
 
 /// Sample time series data type
@@ -165,4 +249,9 @@ class HumidityValues {
   final int hum;
 
   HumidityValues(this.time, this.hum);
+}
+
+String readTimeStamp(int timestamp) {
+  return DateFormat('d m y HH m') //01-01-2001-01-01
+      .format(DateTime.fromMillisecondsSinceEpoch(timestamp * 1000));
 }
