@@ -60,9 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
   final fb = FirebaseDatabase.instance;
   final myController = TextEditingController();
 
-  Map<MarkerId, Marker> clustersMarkers = <MarkerId, Marker>{};
-  Map<CircleId, Circle> clustersCircles = <CircleId, Circle>{};
-  MarkerId mainMarker;
+  Map<MarkerId, Marker> _clustersMarkers = <MarkerId, Marker>{};
+  Map<CircleId, Circle> _clustersCircles = <CircleId, Circle>{};
+  MarkerId _activeMarker;
+  CircleId _activeCircle;
   LatLng _initialLatLng;
 
   var retrievedName;
@@ -100,54 +101,67 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _changeMarkerAndCircleType(LatLng center, CircleId circleId) {
       setState(() {
-        final MarkerId markerId = MarkerId(circleId.value.toString());
+        print(_clustersMarkers[_activeMarker].position);
         Marker marker = Marker(
-            markerId: markerId,
-            position: center,
-            icon: clustersCircles[circleId].fillColor == Colors.red.withOpacity(0.3)
-                ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan)
-                : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+            markerId: _activeMarker,
+            position: _clustersMarkers[_activeMarker].position,
+            icon:
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+            consumeTapEvents: true,
             onTap: () {
               _changeMarkerAndCircleType(center, circleId);
-        });
-        clustersMarkers[markerId] = marker;
+            });
+        _clustersMarkers[_activeMarker] = marker;
+
+        final MarkerId markerId = MarkerId(circleId.value.toString());
+        marker = Marker(
+            markerId: markerId,
+            position: center,
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        );
+        _activeMarker=markerId;
+        _clustersMarkers[markerId] = marker;
 
         Circle circle = Circle(
             circleId: circleId,
             center: center,
             radius: 800,
-            fillColor: clustersCircles[circleId].fillColor == Colors.red.withOpacity(0.3)
+            fillColor: _clustersCircles[circleId].fillColor ==
+                    Colors.red.withOpacity(0.3)
                 ? Colors.cyan.withOpacity(0.3)
-                :Colors.red.withOpacity(0.3),
+                : Colors.red.withOpacity(0.3),
             strokeWidth: 3,
             consumeTapEvents: true,
             onTap: () {
               _changeMarkerAndCircleType(center, circleId);
             });
-        clustersCircles[circleId] = circle;
+        _clustersCircles[circleId] = circle;
       });
     }
 
     Future _addClusterMarker(LatLng center) async {
       setState(() {
-        final MarkerId markerId = MarkerId(clustersMarkers.length.toString());
+        final MarkerId markerId = MarkerId(_clustersMarkers.length.toString());
         Marker marker = Marker(
             markerId: markerId,
             position: center,
             draggable: true,
             consumeTapEvents: true,
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
             onTap: () {
-              _changeMarkerAndCircleType(center, CircleId(markerId.value.toString()));
+              _changeMarkerAndCircleType(
+                  center, CircleId(markerId.value.toString()));
             });
-        clustersMarkers[markerId] = marker;
+        _clustersMarkers[markerId] = marker;
       });
     }
 
     Future _addClusterCircle(LatLng center) async {
       setState(() {
         _addClusterMarker(center);
-        final CircleId circleId = CircleId(clustersCircles.length.toString());
+        final CircleId circleId = CircleId(_clustersCircles.length.toString());
         Circle circle = Circle(
             circleId: circleId,
             center: center,
@@ -158,30 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onTap: () {
               _changeMarkerAndCircleType(center, circleId);
             });
-        clustersCircles[circleId] = circle;
-      });
-    }
-
-    Future _getAllClusters() async{
-
-      Set<dynamic> temp;
-
-      final ref = fb.reference();
-
-      ref
-          .child("test")
-          .child("ballons")
-          .child("balloon0")
-          .child("temperature").once().then((DataSnapshot data) {
-          setState(() {
-            temp.addAll(data);
-          ref.child("test/balloons/balloon0/mapX").once().then((DataSnapshot data) {
-            setState(() {
-              _addClusterCircle(LatLng(data.value, lng));
-              _addClusterMarker(LatLng(data.value, lng));
-            });
-          });
-        });
+        _clustersCircles[circleId] = circle;
       });
     }
 
@@ -335,7 +326,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               onMapCreated: (GoogleMapController controller) {
                                 _controller.complete(controller);
-                                _getAllClusters();
+                                //_getAllClusters();
                               },
                               compassEnabled: true,
                               tiltGesturesEnabled: false,
@@ -343,8 +334,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               onLongPress: (latLng) {
                                 _addClusterCircle(latLng);
                               },
-                              markers: Set<Marker>.of(clustersMarkers.values),
-                              circles: Set<Circle>.of(clustersCircles.values),
+                              markers: Set<Marker>.of(_clustersMarkers.values),
+                              circles: Set<Circle>.of(_clustersCircles.values),
                             ))
                 ]))));
   }
