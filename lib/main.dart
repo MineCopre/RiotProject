@@ -64,11 +64,11 @@ class _MyHomePageState extends State<MyHomePage> {
   final fb = FirebaseDatabase.instance;
   final myController = TextEditingController();
 
-  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  MarkerId selectedMarker;
-  int markerCount = 1;
-  static LatLng _latLng;
-  BitmapDescriptor redMarker;
+  Map<MarkerId, Marker> _clustersMarkers = <MarkerId, Marker>{};
+  Map<CircleId, Circle> _clustersCircles = <CircleId, Circle>{};
+  MarkerId _activeMarker;
+  CircleId _activeCircle;
+  LatLng _initialLatLng;
 
   var retrievedName;
   var temperature;
@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
         double lng = data.value;
         ref.child("mapX").once().then((DataSnapshot data) {
           setState(() {
-            _latLng = LatLng(data.value, lng);
+            _initialLatLng = LatLng(data.value, lng);
           });
         });
       });
@@ -103,31 +103,80 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Completer<GoogleMapController> _controller = Completer();
 
-    Future _changeDefaultMarker(LatLng latlng) async {
+    _changeMarkerAndCircleType(LatLng center, CircleId circleId) {
       setState(() {
-        final MarkerId markerId = MarkerId("DefaultMarker");
-        print(markers.length.toString());
+        print(_clustersMarkers[_activeMarker].position);
         Marker marker = Marker(
-          markerId: markerId,
-          position: latlng,
-          draggable: true,
-          icon: BitmapDescriptor.defaultMarker,
+            markerId: _activeMarker,
+            position: _clustersMarkers[_activeMarker].position,
+            icon:
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+            consumeTapEvents: true,
+            onTap: () {
+              _changeMarkerAndCircleType(center, circleId);
+            });
+        _clustersMarkers[_activeMarker] = marker;
+
+        final MarkerId markerId = MarkerId(circleId.value.toString());
+        marker = Marker(
+            markerId: markerId,
+            position: center,
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
         );
-        markers[markerId] = marker;
+        _activeMarker=markerId;
+        _clustersMarkers[markerId] = marker;
+
+        Circle circle = Circle(
+            circleId: circleId,
+            center: center,
+            radius: 800,
+            fillColor: _clustersCircles[circleId].fillColor ==
+                    Colors.red.withOpacity(0.3)
+                ? Colors.cyan.withOpacity(0.3)
+                : Colors.red.withOpacity(0.3),
+            strokeWidth: 3,
+            consumeTapEvents: true,
+            onTap: () {
+              _changeMarkerAndCircleType(center, circleId);
+            });
+        _clustersCircles[circleId] = circle;
       });
     }
 
-    Future _secondTypeMarker(LatLng latlng) async {
+    Future _addClusterMarker(LatLng center) async {
       setState(() {
-        final MarkerId markerId = MarkerId(markers.length.toString());
-        print(markers.length.toString());
+        final MarkerId markerId = MarkerId(_clustersMarkers.length.toString());
         Marker marker = Marker(
-          markerId: markerId,
-          position: latlng,
-          draggable: true,
-          icon: BitmapDescriptor.defaultMarkerWithHue(250),
-        );
-        markers[markerId] = marker;
+            markerId: markerId,
+            position: center,
+            draggable: true,
+            consumeTapEvents: true,
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+            onTap: () {
+              _changeMarkerAndCircleType(
+                  center, CircleId(markerId.value.toString()));
+            });
+        _clustersMarkers[markerId] = marker;
+      });
+    }
+
+    Future _addClusterCircle(LatLng center) async {
+      setState(() {
+        _addClusterMarker(center);
+        final CircleId circleId = CircleId(_clustersCircles.length.toString());
+        Circle circle = Circle(
+            circleId: circleId,
+            center: center,
+            radius: 800,
+            fillColor: Colors.cyan.withOpacity(0.3),
+            strokeWidth: 3,
+            consumeTapEvents: true,
+            onTap: () {
+              _changeMarkerAndCircleType(center, circleId);
+            });
+        _clustersCircles[circleId] = circle;
       });
     }
 
@@ -151,24 +200,21 @@ class _MyHomePageState extends State<MyHomePage> {
                     ))),
             //Full background for balloon image
             body: Container(
-                height: MediaQuery.of(context).size.height * 0.4,
+                //height: MediaQuery.of(context).size.height * 2,
                 color: Colors.white,
                 //Column where the text and cards will stay
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.only(
-                          top: 20, bottom: 0, left: 20, right: 10),
-                      child: AutoSizeText(
-                        'Real-Time Data: ',
-                        style: const TextStyle(
-                            fontFamily: 'Roboto',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25),
-                        minFontSize: 20,
-                        maxLines: 1,
-                      ),
-                      alignment: Alignment.centerLeft,
+                child: Column(children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.only(
+                        top: 20, bottom: 0, left: 20, right: 10),
+                    child: AutoSizeText(
+                      'Real-Time Data: ',
+                      style: const TextStyle(
+                          fontFamily: 'Roboto',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25),
+                      minFontSize: 20,
+                      maxLines: 1,
                     ),
                     new Expanded(
                         //Each "card" is wrapped by each container
@@ -277,11 +323,45 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ])),
                             ),
                           ),
-                        )
-                      ],
-                    ))
-                  ],
-                ))));
+                  Container(
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                          color: Color(0xFF2E8BC0),
+                          borderRadius: BorderRadius.circular(15)),
+                      child: _initialLatLng == null
+                          ? Container(
+                              child: Center(
+                                child: Text(
+                                  'LOADING MAP...',
+                                  style: TextStyle(
+                                      fontFamily: 'Roboto',
+                                      color: Colors.white,
+                                      fontSize: 25),
+                                ),
+                              ),
+                            )
+                          : GoogleMap(
+                              mapType: MapType.terrain,
+                              initialCameraPosition: CameraPosition(
+                                target: _initialLatLng,
+                                zoom: 14.4746,
+                              ),
+                              onMapCreated: (GoogleMapController controller) {
+                                _controller.complete(controller);
+                                //_getAllClusters();
+                              },
+                              compassEnabled: true,
+                              tiltGesturesEnabled: false,
+                              onTap: (latLng) {},
+                              onLongPress: (latLng) {
+                                _addClusterCircle(latLng);
+                              },
+                              markers: Set<Marker>.of(_clustersMarkers.values),
+                              circles: Set<Circle>.of(_clustersCircles.values),
+                            ))
+                ]))));
+
   }
   @override
   void dispose() {
