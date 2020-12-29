@@ -1,12 +1,6 @@
 # This is a generated file; do not edit or check into version control.
-<<<<<<< HEAD
 firebase_core=C:\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\firebase_core-0.5.2\\
 firebase_core_web=C:\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\firebase_core_web-0.2.1\\
 firebase_database=C:\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\firebase_database-4.3.0\\
 flutter_plugin_android_lifecycle=C:\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\flutter_plugin_android_lifecycle-1.0.11\\
 google_maps_flutter=C:\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\google_maps_flutter-1.0.6\\
-=======
-firebase_core=C:\\flutter\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\firebase_core-0.5.2\\
-firebase_core_web=C:\\flutter\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\firebase_core_web-0.2.1\\
-firebase_database=C:\\flutter\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\firebase_database-4.3.0\\
->>>>>>> 567308b0a96ba1363a3cd5d90354849570c3dc5f
