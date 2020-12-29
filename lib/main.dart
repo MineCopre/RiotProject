@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 
@@ -7,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:intl/intl.dart';
 import 'package:riot_projekt/graphs.dart';
 
 void main() async {
@@ -17,6 +20,7 @@ void main() async {
   ));
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(MyApp());
 }
 
@@ -69,17 +73,17 @@ class _MyHomePageState extends State<MyHomePage> {
   var retrievedName;
   var temperature;
   var humidity;
+  var indexTemp;
 
   @override
   Widget build(BuildContext context) {
     final ref = fb.reference();
 
-    ref.child("Temperature").once().then((DataSnapshot data) {
-      setState(() {
-        temperature = data.value;
-      });
-    });
-    ref.child("Humidity").once().then((DataSnapshot data) {
+
+    ref.child("humidity").once().then((DataSnapshot data) {
+      //print(data.value);
+      //print(data.key);
+      
       setState(() {
         humidity = data.value;
       });
@@ -212,26 +216,84 @@ class _MyHomePageState extends State<MyHomePage> {
                       minFontSize: 20,
                       maxLines: 1,
                     ),
-                    alignment: Alignment.centerLeft,
-                  ),
-                  new Expanded(
-                      //Each "card" is wrapped by a container
-                      child: GridView.count(
-                          scrollDirection: Axis.horizontal,
-                          primary: false,
-                          padding: const EdgeInsets.all(10),
-                          mainAxisSpacing:
-                              MediaQuery.of(context).size.width * 0.15,
-                          crossAxisCount: 1,
-                          children: <Widget>[
+                    new Expanded(
+                        //Each "card" is wrapped by each container
+                        child: GridView.count(
+                      scrollDirection: Axis.horizontal,
+                      primary: false,
+                      padding: const EdgeInsets.all(10),
+                      mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
+                      crossAxisCount: 1,
+                      children: <Widget>[
+                        FutureBuilder(
+                            future: ref
+                                .child("test")
+                                .child("balloons")
+                                .child("balloon0")
+                                .child("temperature")
+                                .limitToLast(1)
+                                .once(),
+                            builder: (context,
+                                AsyncSnapshot<DataSnapshot> snapshot) {
+                              if (snapshot.hasData) {
+                                Map<dynamic, dynamic> values =
+                                    snapshot.data.value;
+
+                                values.forEach((key, value) {
+                                  print(value["value"]);
+                                  //print(readTimeStamp(value["time"]));
+                                  temperature = value["value"];
+                                });
+                                return new GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Graph.withSampleTemperature()));
+                                    //Graph.getTemperature()));
+                                  },
+                                  child: Container(
+                                    decoration: new BoxDecoration(
+                                        color: Color(0xFFB1D4E0),
+                                        //color: Colors.red,
+                                        borderRadius:
+                                            new BorderRadius.circular(15)),
+                                    padding: const EdgeInsets.all(8),
+                                    child: Center(
+                                      child: RichText(
+                                          textAlign: TextAlign.center,
+                                          text: TextSpan(children: <TextSpan>[
+                                            TextSpan(
+                                                text: "Temperature\n\n",
+                                                style: TextStyle(
+                                                    fontFamily: "Roboto",
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20,
+                                                    color: Color(0xFF0C2D48))),
+                                            TextSpan(
+                                              text: "$temperatureº",
+                                              style: TextStyle(
+                                                  fontFamily: "Roboto",
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 30,
+                                                  color: Color(0xFF0C2D48)),
+                                            )
+                                          ])),
+                                    ),
+                                  ),
+                                );
+                              }
+                              return CircularProgressIndicator();
+                            }),
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        Graphs.withSampleTemperature()));
-                            print("Temperature");
+                                        Graph.withSampleHumidity()));
+                            print("Humidity");
                           },
                           child: Container(
                             decoration: new BoxDecoration(
@@ -244,14 +306,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                   textAlign: TextAlign.center,
                                   text: TextSpan(children: <TextSpan>[
                                     TextSpan(
-                                        text: "Temperature\n\n",
+                                        text: "Humidity\n\n",
                                         style: TextStyle(
                                             fontFamily: "Roboto",
                                             fontWeight: FontWeight.bold,
                                             fontSize: 20,
                                             color: Color(0xFF0C2D48))),
                                     TextSpan(
-                                      text: "$temperatureº",
+                                      text: "$humidity%",
                                       style: TextStyle(
                                           fontFamily: "Roboto",
                                           fontWeight: FontWeight.bold,
@@ -261,45 +323,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ])),
                             ),
                           ),
-                        ),
-                        GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          Graphs.withSampleHumidity()));
-                              print("Humidity");
-                            },
-                            child: Container(
-                                decoration: new BoxDecoration(
-                                    color: Color(0xFFB1D4E0),
-                                    //color: Colors.red,
-                                    borderRadius:
-                                        new BorderRadius.circular(15)),
-                                padding: const EdgeInsets.all(8),
-                                child: Center(
-                                  child: RichText(
-                                      textAlign: TextAlign.center,
-                                      text: TextSpan(children: <TextSpan>[
-                                        TextSpan(
-                                            text: "Humidity\n\n",
-                                            style: TextStyle(
-                                                fontFamily: "Roboto",
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20,
-                                                color: Color(0xFF0C2D48))),
-                                        TextSpan(
-                                          text: "$humidity%",
-                                          style: TextStyle(
-                                              fontFamily: "Roboto",
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 30,
-                                              color: Color(0xFF0C2D48)),
-                                        )
-                                      ])),
-                                )))
-                      ])),
                   Container(
                       height: MediaQuery.of(context).size.height * 0.3,
                       padding: const EdgeInsets.all(20),
@@ -338,10 +361,16 @@ class _MyHomePageState extends State<MyHomePage> {
                               circles: Set<Circle>.of(_clustersCircles.values),
                             ))
                 ]))));
-  }
 
+  }
   @override
   void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight
+    ]);
     myController.dispose();
     super.dispose();
   }
