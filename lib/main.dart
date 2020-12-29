@@ -152,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       alignment: Alignment.centerLeft,
                     ),
                     new Expanded(
-                        //Each "card" is wrapped by a container
+                        //Each "card" is wrapped by each container
                         child: GridView.count(
                       scrollDirection: Axis.horizontal,
                       primary: false,
