@@ -49,7 +49,7 @@ class MyHomePage extends StatefulWidget {
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
 
-  // This class is the configuration for the state. It holds the values (in this
+  // This class is the configuration for the state. It holds the v  alues (in this
   // case the title) provided by the parent (in this case the App widget) and
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
@@ -79,11 +79,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final ref = fb.reference();
 
-
     ref.child("humidity").once().then((DataSnapshot data) {
       //print(data.value);
       //print(data.key);
-      
+
       setState(() {
         humidity = data.value;
       });
@@ -105,48 +104,64 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _changeMarkerAndCircleType(LatLng center, CircleId circleId) {
       setState(() {
-        print(_clustersMarkers[_activeMarker].position);
-        Marker marker = Marker(
-            markerId: _activeMarker,
-            position: _clustersMarkers[_activeMarker].position,
-            icon:
-            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
-            consumeTapEvents: true,
-            onTap: () {
-              _changeMarkerAndCircleType(center, circleId);
-            });
-        _clustersMarkers[_activeMarker] = marker;
 
-        final MarkerId markerId = MarkerId(circleId.value.toString());
-        marker = Marker(
-            markerId: markerId,
-            position: center,
-            icon:
-                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        MarkerId markerId = MarkerId(circleId.value.toString());
+
+        Marker activeMarker = Marker(
+          markerId: markerId,
+          position: center,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          consumeTapEvents: false,
         );
-        _activeMarker=markerId;
-        _clustersMarkers[markerId] = marker;
+        _clustersMarkers[markerId] = activeMarker;
 
-        Circle circle = Circle(
-            circleId: circleId,
-            center: center,
-            radius: 800,
-            fillColor: _clustersCircles[circleId].fillColor ==
-                    Colors.red.withOpacity(0.3)
-                ? Colors.cyan.withOpacity(0.3)
-                : Colors.red.withOpacity(0.3),
-            strokeWidth: 3,
-            consumeTapEvents: true,
-            onTap: () {
-              _changeMarkerAndCircleType(center, circleId);
-            });
-        _clustersCircles[circleId] = circle;
+        if(_activeMarker != null) {
+          Marker marker = Marker(
+              markerId: _activeMarker,
+              position: _clustersMarkers[_activeMarker].position,
+              icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+              consumeTapEvents: true,
+              onTap: () {
+                _changeMarkerAndCircleType(
+                    _clustersMarkers[_activeMarker].position, _activeCircle);
+              });
+          _clustersMarkers[_activeMarker] = marker;
+        }
+
+        Circle activeCircle = Circle( 
+          circleId: circleId,
+          center: center,
+          radius: 800,
+          fillColor: Colors.red.withOpacity(0.3),
+          strokeWidth: 3
+        );
+        _clustersCircles[circleId] = activeCircle;
+
+        if(_activeCircle != null) {
+          Circle circle = Circle(
+              circleId: _activeCircle,
+              center: _clustersCircles[_activeCircle].center,
+              radius: 800,
+              fillColor: Colors.cyan.withOpacity(0.3),
+              strokeWidth: 3,
+              consumeTapEvents: true,
+              onTap: () {
+                _changeMarkerAndCircleType(
+                    _clustersCircles[_activeCircle].center, CircleId(_activeCircle.toString()));
+              });
+          _clustersCircles[_activeCircle] = circle;
+        }
+
+        _activeMarker = markerId;
+        _activeCircle = circleId;
+        print(_activeCircle);
       });
     }
 
     Future _addClusterMarker(LatLng center) async {
       setState(() {
-        final MarkerId markerId = MarkerId(_clustersMarkers.length.toString());
+        MarkerId markerId = MarkerId(_clustersMarkers.length.toString());
         Marker marker = Marker(
             markerId: markerId,
             position: center,
@@ -163,9 +178,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     Future _addClusterCircle(LatLng center) async {
+
       setState(() {
         _addClusterMarker(center);
-        final CircleId circleId = CircleId(_clustersCircles.length.toString());
+        CircleId circleId = CircleId(_clustersCircles.length.toString());
         Circle circle = Circle(
             circleId: circleId,
             center: center,
@@ -216,113 +232,118 @@ class _MyHomePageState extends State<MyHomePage> {
                       minFontSize: 20,
                       maxLines: 1,
                     ),
-                    new Expanded(
-                        //Each "card" is wrapped by each container
-                        child: GridView.count(
-                      scrollDirection: Axis.horizontal,
-                      primary: false,
-                      padding: const EdgeInsets.all(10),
-                      mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
-                      crossAxisCount: 1,
-                      children: <Widget>[
-                        FutureBuilder(
-                            future: ref
-                                .child("test")
-                                .child("balloons")
-                                .child("balloon0")
-                                .child("temperature")
-                                .limitToLast(1)
-                                .once(),
-                            builder: (context,
-                                AsyncSnapshot<DataSnapshot> snapshot) {
-                              if (snapshot.hasData) {
-                                Map<dynamic, dynamic> values =
-                                    snapshot.data.value;
+                    alignment: Alignment.centerLeft,
+                  ),
+                  new Expanded(
+                      //Each "card" is wrapped by each container
+                      child: GridView.count(
+                    scrollDirection: Axis.horizontal,
+                    primary: false,
+                    padding: const EdgeInsets.all(10),
+                    mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
+                    crossAxisCount: 1,
+                    children: <Widget>[
+                      FutureBuilder(
+                          future: ref
+                              .child("test")
+                              .child("balloons")
+                              .child("balloon0")
+                              .child("temperature")
+                              .limitToLast(1)
+                              .once(),
+                          builder:
+                              (context, AsyncSnapshot<DataSnapshot> snapshot) {
+                            if (snapshot.hasData) {
+                              Map<dynamic, dynamic> values =
+                                  snapshot.data.value;
 
-                                values.forEach((key, value) {
-                                  print(value["value"]);
-                                  //print(readTimeStamp(value["time"]));
-                                  temperature = value["value"];
-                                });
-                                return new GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                Graph.withSampleTemperature()));
-                                    //Graph.getTemperature()));
-                                  },
-                                  child: Container(
-                                    decoration: new BoxDecoration(
-                                        color: Color(0xFFB1D4E0),
-                                        //color: Colors.red,
-                                        borderRadius:
-                                            new BorderRadius.circular(15)),
-                                    padding: const EdgeInsets.all(8),
-                                    child: Center(
-                                      child: RichText(
-                                          textAlign: TextAlign.center,
-                                          text: TextSpan(children: <TextSpan>[
-                                            TextSpan(
-                                                text: "Temperature\n\n",
-                                                style: TextStyle(
-                                                    fontFamily: "Roboto",
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20,
-                                                    color: Color(0xFF0C2D48))),
-                                            TextSpan(
-                                              text: "$temperatureº",
+                              values.forEach((key, value) {
+                                print(value["value"]);
+                                //print(readTimeStamp(value["time"]));
+                                temperature = value["value"];
+                              });
+                              return new GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Graph.withSampleTemperature()));
+                                  //Graph.getTemperature()));
+                                },
+                                child: Container(
+                                  decoration: new BoxDecoration(
+                                      color: Color(0xFFB1D4E0),
+                                      //color: Colors.red,
+                                      borderRadius:
+                                          new BorderRadius.circular(15)),
+                                  padding: const EdgeInsets.all(8),
+                                  child: Center(
+                                    child: RichText(
+                                        textAlign: TextAlign.center,
+                                        text: TextSpan(children: <TextSpan>[
+                                          TextSpan(
+                                              text: "Temperature\n\n",
                                               style: TextStyle(
                                                   fontFamily: "Roboto",
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 30,
-                                                  color: Color(0xFF0C2D48)),
-                                            )
-                                          ])),
-                                    ),
+                                                  fontSize: 20,
+                                                  color: Color(0xFF0C2D48))),
+                                          TextSpan(
+                                            text: "$temperatureº",
+                                            style: TextStyle(
+                                                fontFamily: "Roboto",
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 30,
+                                                color: Color(0xFF0C2D48)),
+                                          )
+                                        ])),
                                   ),
-                                );
-                              }
-                              return CircularProgressIndicator();
-                            }),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        Graph.withSampleHumidity()));
-                            print("Humidity");
-                          },
-                          child: Container(
-                            decoration: new BoxDecoration(
-                                color: Color(0xFFB1D4E0),
-                                //color: Colors.red,
-                                borderRadius: new BorderRadius.circular(15)),
-                            padding: const EdgeInsets.all(8),
-                            child: Center(
-                              child: RichText(
-                                  textAlign: TextAlign.center,
-                                  text: TextSpan(children: <TextSpan>[
-                                    TextSpan(
-                                        text: "Humidity\n\n",
-                                        style: TextStyle(
-                                            fontFamily: "Roboto",
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
-                                            color: Color(0xFF0C2D48))),
-                                    TextSpan(
-                                      text: "$humidity%",
+                                ),
+                              );
+                            }
+                            return CircularProgressIndicator();
+                          }),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      Graph.withSampleHumidity()));
+                          print("Humidity");
+                        },
+                        child: Container(
+                          decoration: new BoxDecoration(
+                              color: Color(0xFFB1D4E0),
+                              //color: Colors.red,
+                              borderRadius: new BorderRadius.circular(15)),
+                          padding: const EdgeInsets.all(8),
+                          child: Center(
+                            child: RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(children: <TextSpan>[
+                                  TextSpan(
+                                      text: "Humidity\n\n",
                                       style: TextStyle(
                                           fontFamily: "Roboto",
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 30,
-                                          color: Color(0xFF0C2D48)),
-                                    )
-                                  ])),
-                            ),
+                                          fontSize: 20,
+                                          color: Color(0xFF0C2D48))),
+                                  TextSpan(
+                                    text: "$humidity%",
+                                    style: TextStyle(
+                                        fontFamily: "Roboto",
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 30,
+                                        color: Color(0xFF0C2D48)),
+                                  )
+                                ])),
                           ),
+                        ),
+                      )
+                    ],
+                  )),
                   Container(
                       height: MediaQuery.of(context).size.height * 0.3,
                       padding: const EdgeInsets.all(20),
@@ -361,8 +382,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               circles: Set<Circle>.of(_clustersCircles.values),
                             ))
                 ]))));
-
   }
+
   @override
   void dispose() {
     SystemChrome.setPreferredOrientations([
