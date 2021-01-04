@@ -104,7 +104,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _changeMarkerAndCircleType(LatLng center, CircleId circleId) {
       setState(() {
-
         MarkerId markerId = MarkerId(circleId.value.toString());
 
         Marker activeMarker = Marker(
@@ -115,12 +114,12 @@ class _MyHomePageState extends State<MyHomePage> {
         );
         _clustersMarkers[markerId] = activeMarker;
 
-        if(_activeMarker != null) {
+        if (_activeMarker != null) {
           Marker marker = Marker(
               markerId: _activeMarker,
               position: _clustersMarkers[_activeMarker].position,
-              icon:
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueCyan),
               consumeTapEvents: true,
               onTap: () {
                 _changeMarkerAndCircleType(
@@ -129,16 +128,15 @@ class _MyHomePageState extends State<MyHomePage> {
           _clustersMarkers[_activeMarker] = marker;
         }
 
-        Circle activeCircle = Circle( 
-          circleId: circleId,
-          center: center,
-          radius: 800,
-          fillColor: Colors.red.withOpacity(0.3),
-          strokeWidth: 3
-        );
+        Circle activeCircle = Circle(
+            circleId: circleId,
+            center: center,
+            radius: 800,
+            fillColor: Colors.red.withOpacity(0.3),
+            strokeWidth: 3);
         _clustersCircles[circleId] = activeCircle;
 
-        if(_activeCircle != null) {
+        if (_activeCircle != null) {
           Circle circle = Circle(
               circleId: _activeCircle,
               center: _clustersCircles[_activeCircle].center,
@@ -148,7 +146,8 @@ class _MyHomePageState extends State<MyHomePage> {
               consumeTapEvents: true,
               onTap: () {
                 _changeMarkerAndCircleType(
-                    _clustersCircles[_activeCircle].center, CircleId(_activeCircle.toString()));
+                    _clustersCircles[_activeCircle].center,
+                    CircleId(_activeCircle.toString()));
               });
           _clustersCircles[_activeCircle] = circle;
         }
@@ -178,7 +177,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     Future _addClusterCircle(LatLng center) async {
-
       setState(() {
         _addClusterMarker(center);
         CircleId circleId = CircleId(_clustersCircles.length.toString());
