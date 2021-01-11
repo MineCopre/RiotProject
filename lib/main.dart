@@ -12,7 +12,10 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
+import 'package:riot_projekt/controller.dart';
 import 'package:riot_projekt/graphs.dart';
+
+import 'model.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -62,7 +65,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final fb = FirebaseDatabase.instance;
-  final myController = TextEditingController();
+  final controller = Controller();
 
   Map<MarkerId, Marker> _clustersMarkers = <MarkerId, Marker>{};
   Map<CircleId, Circle> _clustersCircles = <CircleId, Circle>{};
@@ -72,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   var retrievedName;
   var temperature;
-  var humidity;
+  dynamic humidity;
   var indexTemp;
 
   @override
@@ -87,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
         humidity = data.value;
       });
     });
+
     ref.child("mapY").once().then((DataSnapshot data) {
       setState(() {
         double lng = data.value;
@@ -102,77 +106,99 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Completer<GoogleMapController> _controller = Completer();
 
-    _changeMarkerAndCircleType(LatLng center, CircleId circleId) {
+    _changeMarkerAndCircleType(
+        LatLng center, CircleId circleId, CircleId activeCircleId) {
       setState(() {
         MarkerId markerId = MarkerId(circleId.value.toString());
+        MarkerId activeMarkerId = MarkerId(activeCircleId.value.toString());
 
+        //Create markers
         Marker activeMarker = Marker(
           markerId: markerId,
           position: center,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
           consumeTapEvents: false,
         );
-        _clustersMarkers[markerId] = activeMarker;
 
-        if (_activeMarker != null) {
-          Marker marker = Marker(
-              markerId: _activeMarker,
-              position: _clustersMarkers[_activeMarker].position,
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueCyan),
-              consumeTapEvents: true,
-              onTap: () {
-                _changeMarkerAndCircleType(
-                    _clustersMarkers[_activeMarker].position, _activeCircle);
-              });
-          _clustersMarkers[_activeMarker] = marker;
-        }
+        Marker marker = Marker(
+            markerId: _activeMarker,
+            position: _clustersMarkers[_activeMarker].position,
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+            consumeTapEvents: true,
+            onTap: () {
+              _changeMarkerAndCircleType(
+                  _clustersMarkers[activeMarkerId].position,
+                  activeCircleId,
+                  _activeCircle);
+            });
 
+        //Create circles
         Circle activeCircle = Circle(
             circleId: circleId,
             center: center,
             radius: 800,
             fillColor: Colors.red.withOpacity(0.3),
             strokeWidth: 3);
+
+        Circle circle = Circle(
+            circleId: _activeCircle,
+            center: _clustersCircles[_activeCircle].center,
+            radius: 800,
+            fillColor: Colors.cyan.withOpacity(0.3),
+            strokeWidth: 3,
+            consumeTapEvents: true,
+            onTap: () {
+              _changeMarkerAndCircleType(
+                  _clustersCircles[activeCircleId].center,
+                  activeCircleId,
+                  _activeCircle);
+            });
+
+        _clustersCircles.remove(circleId);
         _clustersCircles[circleId] = activeCircle;
 
-        if (_activeCircle != null) {
-          Circle circle = Circle(
-              circleId: _activeCircle,
-              center: _clustersCircles[_activeCircle].center,
-              radius: 800,
-              fillColor: Colors.cyan.withOpacity(0.3),
-              strokeWidth: 3,
-              consumeTapEvents: true,
-              onTap: () {
-                _changeMarkerAndCircleType(
-                    _clustersCircles[_activeCircle].center,
-                    CircleId(_activeCircle.toString()));
-              });
-          _clustersCircles[_activeCircle] = circle;
-        }
+        _clustersMarkers.remove(markerId);
+        _clustersMarkers[markerId] = activeMarker;
 
-        _activeMarker = markerId;
-        _activeCircle = circleId;
-        print(_activeCircle);
+        _clustersCircles.remove(_activeCircle);
+        _clustersCircles[_activeCircle] = circle;
+
+        _clustersMarkers.remove(_activeMarker);
+        _clustersMarkers[_activeMarker] = marker;
+
+        _activeCircle = activeCircle.circleId;
+        _activeMarker = activeMarker.markerId;
       });
     }
 
     Future _addClusterMarker(LatLng center) async {
       setState(() {
         MarkerId markerId = MarkerId(_clustersMarkers.length.toString());
-        Marker marker = Marker(
+        if (_activeMarker != null) {
+          Marker marker = Marker(
+              markerId: markerId,
+              position: center,
+              draggable: true,
+              consumeTapEvents: true,
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueCyan),
+              onTap: () {
+                _changeMarkerAndCircleType(
+                    center, CircleId(markerId.value.toString()), _activeCircle);
+              });
+          _clustersMarkers[markerId] = marker;
+        } else {
+          Marker marker = Marker(
             markerId: markerId,
             position: center,
-            draggable: true,
-            consumeTapEvents: true,
             icon:
-                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
-            onTap: () {
-              _changeMarkerAndCircleType(
-                  center, CircleId(markerId.value.toString()));
-            });
-        _clustersMarkers[markerId] = marker;
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+            consumeTapEvents: false,
+          );
+          _clustersMarkers[markerId] = marker;
+          _activeMarker = markerId;
+        }
       });
     }
 
@@ -180,17 +206,28 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _addClusterMarker(center);
         CircleId circleId = CircleId(_clustersCircles.length.toString());
-        Circle circle = Circle(
-            circleId: circleId,
-            center: center,
-            radius: 800,
-            fillColor: Colors.cyan.withOpacity(0.3),
-            strokeWidth: 3,
-            consumeTapEvents: true,
-            onTap: () {
-              _changeMarkerAndCircleType(center, circleId);
-            });
-        _clustersCircles[circleId] = circle;
+        if (_activeCircle != null) {
+          Circle circle = Circle(
+              circleId: circleId,
+              center: center,
+              radius: 800,
+              fillColor: Colors.cyan.withOpacity(0.3),
+              strokeWidth: 3,
+              consumeTapEvents: true,
+              onTap: () {
+                _changeMarkerAndCircleType(center, circleId, _activeCircle);
+              });
+          _clustersCircles[circleId] = circle;
+        } else {
+          Circle circle = Circle(
+              circleId: circleId,
+              center: center,
+              radius: 800,
+              fillColor: Colors.red.withOpacity(0.3),
+              strokeWidth: 3);
+          _clustersCircles[circleId] = circle;
+          _activeCircle = circleId;
+        }
       });
     }
 
@@ -208,9 +245,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         borderRadius: BorderRadius.circular(15)),
                     flexibleSpace: Container(
                       child: Image.asset(
-                        'assets/images/MiniLoonLogoFinal.jpg',
+                        'assets/images/miniloon.png',
                       ),
-                      padding: const EdgeInsets.all(30),
+                      //padding: const EdgeInsets.all(30),
+                      padding: const EdgeInsets.only(
+                          bottom: 20, top: 30, left: 30, right: 30),
                     ))),
             //Full background for balloon image
             body: Container(
@@ -239,7 +278,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     //padding: const EdgeInsets.all(30),
                     padding: const EdgeInsets.only(
                         bottom: 30,
-                        top: 30,
+                        top: 15,
                         left: 15,
                         right:
                             30), //Left must be equal to padding in container above to line up with the text
@@ -250,7 +289,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           future: ref
                               .child("test")
                               .child("balloons")
-                              .child("balloon0")
+                              .child("0")
                               .child("temperature")
                               .limitToLast(1)
                               .once(),
@@ -264,10 +303,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 temperature = "No Data";
                               } else {
                                 values.forEach((key, value) {
-                                  print(value["value"]);
                                   //print(readTimeStamp(value["time"]));
                                   temperature = value["value"];
-                                  temperature += "º";
                                 });
                               }
                               return new GestureDetector(
@@ -276,8 +313,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              Graph.withSampleTemperature()));
-                                  //Graph.getTemperature()));
+                                              //Graph.withSampleTemperature()));
+                                              Graph.getTemperature(ref)));
                                 },
                                 child: Container(
                                   decoration: new BoxDecoration(
@@ -298,7 +335,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   fontSize: 20,
                                                   color: Color(0xFF0C2D48))),
                                           TextSpan(
-                                            text: "$temperature",
+                                            text: "$temperatureº",
                                             style: TextStyle(
                                                 fontFamily: "Roboto",
                                                 fontWeight: FontWeight.bold,
@@ -353,19 +390,21 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   )),
                   Container(
-                      height: MediaQuery.of(context).size.height * 0.3,
+                      height: MediaQuery.of(context).size.height * 0.4,
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                           color: Color(0xFFB1D4E0),
                           borderRadius: BorderRadius.circular(15)),
                       child: _initialLatLng == null
                           ? Container(
+                              alignment: Alignment.bottomCenter,
                               child: Center(
                                 child: Text(
                                   'LOADING MAP...',
                                   style: TextStyle(
                                       fontFamily: 'Roboto',
-                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF0C2D48),
                                       fontSize: 25),
                                 ),
                               ),
@@ -399,7 +438,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                         Set<Circle>.of(_clustersCircles.values),
                                   ))),
                             )),
-                  Center(child: Text("Hello there\nHello there"))
                 ]))));
   }
 
@@ -411,7 +449,6 @@ class _MyHomePageState extends State<MyHomePage> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight
     ]);
-    myController.dispose();
     super.dispose();
   }
 }

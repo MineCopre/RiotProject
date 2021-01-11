@@ -20,8 +20,8 @@ class Graph extends StatefulWidget {
     );
   }
 
-  factory Graph.getTemperature() {
-    return new Graph(_databaseTemperature(), animate: true);
+  factory Graph.getTemperature(DatabaseReference ref) {
+    return new Graph(_databaseTemperature(ref), animate: true);
   }
 
   /// Create a [TimesSeriesChart] with sample temperature data (no transitions)
@@ -63,44 +63,19 @@ class Graph extends StatefulWidget {
     ];
   }
 
-  static List<charts.Series<TemperatureValues, DateTime>>
-      _databaseTemperature() {
-    final ref = FirebaseDatabase.instance.reference();
-    final List<dynamic> temps = new List();
-    final List<dynamic> times = new List();
+  static List<charts.Series<TemperatureValues, DateTime>> _databaseTemperature(
+      DatabaseReference ref) {
+    List<dynamic> temps = new List();
+    List<dynamic> times = new List();
 
-/*
-    ref
-        .child("test")
-        .child("balloons")
-        .child("balloon0")
-        .child("temperature")
-        .once()
-        .then((DataSnapshot snapshot) {
-      //print('Data : ${snapshot.value}');
-      var tempArray = snapshot.value;
-      tempArray.forEach((element) {
-        temps.add(element.value["value"]);
-        times.add(element.value["time"]);
-      });
-    });
-    print(temps.length);
-    */
+    Map<dynamic, dynamic> a;
+    getData(ref, a);
 
-/*
-      Map<dynamic, dynamic> values = snap.value;
-      values.forEach((key, value) {
-        //print(key + " + " + value);
-        //print(key);
-        order.add(key);
-      });
-    });
-
-    order.sort();
-    order.forEach((element) {
-      print(element);
-    });
-*/
+    a.length;
+    final data = [
+      new TemperatureValues(new DateTime(2020, 11, 23, 0, 0), 5),
+      new TemperatureValues(new DateTime(2020, 11, 23, 5, 0), 7),
+    ];
 
     return [
       new charts.Series<TemperatureValues, DateTime>(
@@ -108,7 +83,7 @@ class Graph extends StatefulWidget {
           colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
           domainFn: (TemperatureValues temp, _) => temp.time,
           measureFn: (TemperatureValues temp, _) => temp.temp,
-          data: null //data,
+          data: data //data,
           )
     ];
   }
@@ -168,6 +143,18 @@ class Graph extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _Builder(seriesList, animate);
+}
+
+void getData(DatabaseReference ref, Map<dynamic, dynamic> a) {
+  ref
+      .child("test")
+      .child("balloons")
+      .child("0")
+      .child("temperature")
+      .once()
+      .then((DataSnapshot snapshot) {
+    a = snapshot.value;
+  });
 }
 
 class _Builder extends State<Graph> {
