@@ -200,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
             appBar: PreferredSize(
                 preferredSize: Size.fromHeight(
                     MediaQuery.of(context).size.height *
-                        0.25), //Adaptive height
+                        0.15), //Adaptive height
                 child: AppBar(
                     backgroundColor: Color(0xFF2E8BC0),
                     //backgroundColor: Colors.red,
@@ -208,178 +208,146 @@ class _MyHomePageState extends State<MyHomePage> {
                         borderRadius: BorderRadius.circular(15)),
                     flexibleSpace: Container(
                       child: Image.asset(
-                        'assets/images/balloon.png',
+                        'assets/images/MiniLoonLogoFinal.jpg',
                       ),
                       padding: const EdgeInsets.all(30),
                     ))),
             //Full background for balloon image
             body: Container(
-                //height: MediaQuery.of(context).size.height * 2,
-                color: Colors.white,
-                //Column where the text and cards will stay
-                child: Column(children: <Widget>[
-                  Container(
-                    padding: const EdgeInsets.only(
-                        top: 20, bottom: 0, left: 20, right: 10),
-                    child: AutoSizeText(
-                      'Real-Time Data: ',
-                      style: const TextStyle(
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25),
-                      minFontSize: 20,
-                      maxLines: 1,
-                    ),
-                    alignment: Alignment.centerLeft,
+              height: MediaQuery.of(context).size.height * 0.65,
+              color: Colors.white,
+              //Column where the text and cards will stay
+              child: Column(children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.only(
+                      top: 20, bottom: 0, left: 20, right: 10),
+                  child: AutoSizeText(
+                    'Real-Time Data: ',
+                    style: const TextStyle(
+                        fontFamily: 'Roboto',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25),
+                    minFontSize: 20,
+                    maxLines: 1,
                   ),
-                  new Expanded(
-                      //Each "card" is wrapped by each container
-                      child: GridView.count(
-                    scrollDirection: Axis.horizontal,
-                    primary: false,
-                    padding: const EdgeInsets.all(10),
-                    mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
-                    crossAxisCount: 1,
-                    children: <Widget>[
-                      FutureBuilder(
-                          future: ref
-                              .child("test")
-                              .child("balloons")
-                              .child("balloon0")
-                              .child("temperature")
-                              .limitToLast(1)
-                              .once(),
-                          builder:
-                              (context, AsyncSnapshot<DataSnapshot> snapshot) {
-                            if (snapshot.hasData) {
-                              Map<dynamic, dynamic> values =
-                                  snapshot.data.value;
+                  alignment: Alignment.centerLeft,
+                ),
+                new Expanded(
+                    //Each "card" is wrapped by each container
+                    child: GridView.count(
+                  scrollDirection: Axis.horizontal,
+                  primary: false,
+                  padding: const EdgeInsets.all(10),
+                  mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
+                  crossAxisCount: 1,
+                  children: <Widget>[
+                    FutureBuilder(
+                        future: ref
+                            .child("test")
+                            .child("balloons")
+                            .child("balloon0")
+                            .child("temperature")
+                            .limitToLast(1)
+                            .once(),
+                        builder:
+                            (context, AsyncSnapshot<DataSnapshot> snapshot) {
+                          if (snapshot.hasData) {
+                            Map<dynamic, dynamic> values = snapshot.data.value;
 
+                            if (values == null) {
+                              temperature = "No Data";
+                            } else {
                               values.forEach((key, value) {
                                 print(value["value"]);
                                 //print(readTimeStamp(value["time"]));
                                 temperature = value["value"];
+                                temperature += "º";
                               });
-                              return new GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              Graph.withSampleTemperature()));
-                                  //Graph.getTemperature()));
-                                },
-                                child: Container(
-                                  decoration: new BoxDecoration(
-                                      color: Color(0xFFB1D4E0),
-                                      //color: Colors.red,
-                                      borderRadius:
-                                          new BorderRadius.circular(15)),
-                                  padding: const EdgeInsets.all(8),
-                                  child: Center(
-                                    child: RichText(
-                                        textAlign: TextAlign.center,
-                                        text: TextSpan(children: <TextSpan>[
-                                          TextSpan(
-                                              text: "Temperature\n\n",
-                                              style: TextStyle(
-                                                  fontFamily: "Roboto",
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20,
-                                                  color: Color(0xFF0C2D48))),
-                                          TextSpan(
-                                            text: "$temperatureº",
+                            }
+                            return new GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            Graph.withSampleTemperature()));
+                                //Graph.getTemperature()));
+                              },
+                              child: Container(
+                                decoration: new BoxDecoration(
+                                    color: Color(0xFFB1D4E0),
+                                    //color: Colors.red,
+                                    borderRadius:
+                                        new BorderRadius.circular(15)),
+                                padding: const EdgeInsets.all(8),
+                                child: Center(
+                                  child: RichText(
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(children: <TextSpan>[
+                                        TextSpan(
+                                            text: "Temperature\n\n",
                                             style: TextStyle(
                                                 fontFamily: "Roboto",
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 30,
-                                                color: Color(0xFF0C2D48)),
-                                          )
-                                        ])),
-                                  ),
+                                                fontSize: 20,
+                                                color: Color(0xFF0C2D48))),
+                                        TextSpan(
+                                          text: "$temperature",
+                                          style: TextStyle(
+                                              fontFamily: "Roboto",
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 25,
+                                              color: Color(0xFF0C2D48)),
+                                        )
+                                      ])),
                                 ),
-                              );
-                            }
-                            return CircularProgressIndicator();
-                          }),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      Graph.withSampleHumidity()));
-                          print("Humidity");
-                        },
-                        child: Container(
-                          decoration: new BoxDecoration(
-                              color: Color(0xFFB1D4E0),
-                              //color: Colors.red,
-                              borderRadius: new BorderRadius.circular(15)),
-                          padding: const EdgeInsets.all(8),
-                          child: Center(
-                            child: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(children: <TextSpan>[
-                                  TextSpan(
-                                      text: "Humidity\n\n",
-                                      style: TextStyle(
-                                          fontFamily: "Roboto",
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                          color: Color(0xFF0C2D48))),
-                                  TextSpan(
-                                    text: "$humidity%",
+                              ),
+                            );
+                          }
+                          return CircularProgressIndicator();
+                        }),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    Graph.withSampleHumidity()));
+                        print("Humidity");
+                      },
+                      child: Container(
+                        decoration: new BoxDecoration(
+                            color: Color(0xFFB1D4E0),
+                            //color: Colors.red,
+                            borderRadius: new BorderRadius.circular(15)),
+                        padding: const EdgeInsets.all(8),
+                        child: Center(
+                          child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(children: <TextSpan>[
+                                TextSpan(
+                                    text: "Humidity\n\n",
                                     style: TextStyle(
                                         fontFamily: "Roboto",
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 30,
-                                        color: Color(0xFF0C2D48)),
-                                  )
-                                ])),
-                          ),
-                        ),
-                      )
-                    ],
-                  )),
-                  Container(
-                      height: MediaQuery.of(context).size.height * 0.3,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                          color: Color(0xFF2E8BC0),
-                          borderRadius: BorderRadius.circular(15)),
-                      child: _initialLatLng == null
-                          ? Container(
-                              child: Center(
-                                child: Text(
-                                  'LOADING MAP...',
+                                        fontSize: 20,
+                                        color: Color(0xFF0C2D48))),
+                                TextSpan(
+                                  text: "$humidity%",
                                   style: TextStyle(
-                                      fontFamily: 'Roboto',
-                                      color: Colors.white,
-                                      fontSize: 25),
-                                ),
-                              ),
-                            )
-                          : GoogleMap(
-                              mapType: MapType.terrain,
-                              initialCameraPosition: CameraPosition(
-                                target: _initialLatLng,
-                                zoom: 14.4746,
-                              ),
-                              onMapCreated: (GoogleMapController controller) {
-                                _controller.complete(controller);
-                                //_getAllClusters();
-                              },
-                              compassEnabled: true,
-                              tiltGesturesEnabled: false,
-                              onTap: (latLng) {},
-                              onLongPress: (latLng) {
-                                _addClusterCircle(latLng);
-                              },
-                              markers: Set<Marker>.of(_clustersMarkers.values),
-                              circles: Set<Circle>.of(_clustersCircles.values),
-                            ))
-                ]))));
+                                      fontFamily: "Roboto",
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25,
+                                      color: Color(0xFF0C2D48)),
+                                )
+                              ])),
+                        ),
+                      ),
+                    )
+                  ],
+                )),
+              ]),
+            )));
   }
 
   @override
