@@ -12,8 +12,11 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
+import 'package:riot_projekt/controller.dart';
 import 'package:riot_projekt/graphs.dart';
 import 'package:riot_projekt/graphsNew.dart';
+
+import 'model.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -300,9 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   //print(readTimeStamp(value["time"]));
                                   temperature = value["value"];
                                 });
-
-                                
-                              }
+                         }
                               */
                               temperature = snapshot.data.value;
                               return new GestureDetector(
