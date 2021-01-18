@@ -14,6 +14,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
 import 'package:riot_projekt/controller.dart';
 import 'package:riot_projekt/graphs.dart';
+import 'package:riot_projekt/graphsNew.dart';
 
 import 'model.dart';
 
@@ -65,8 +66,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final fb = FirebaseDatabase.instance;
-  final controller = Controller();
-
   Map<MarkerId, Marker> _clustersMarkers = <MarkerId, Marker>{};
   Map<CircleId, Circle> _clustersCircles = <CircleId, Circle>{};
   MarkerId _activeMarker;
@@ -287,15 +286,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: <Widget>[
                       FutureBuilder(
                           future: ref
-                              .child("test")
-                              .child("balloons")
-                              .child("0")
-                              .child("temperature")
-                              .limitToLast(1)
+                              .child("hamburg_stadtpark")
+                              .child("avg_temp")
                               .once(),
                           builder:
                               (context, AsyncSnapshot<DataSnapshot> snapshot) {
                             if (snapshot.hasData) {
+                              /*
                               Map<dynamic, dynamic> values =
                                   snapshot.data.value;
 
@@ -306,7 +303,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                   //print(readTimeStamp(value["time"]));
                                   temperature = value["value"];
                                 });
-                              }
+                         }
+                              */
+                              temperature = snapshot.data.value;
                               return new GestureDetector(
                                 onTap: () {
                                   Navigator.push(
@@ -314,7 +313,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               //Graph.withSampleTemperature()));
-                                              Graph.getTemperature(ref)));
+                                              GraphsTemp()));
                                 },
                                 child: Container(
                                   decoration: new BoxDecoration(
