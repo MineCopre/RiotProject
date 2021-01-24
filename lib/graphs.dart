@@ -13,8 +13,14 @@ class Graph extends StatefulWidget {
 
   /// Create a [TimesSeriesChart] with sample data (no transitions)
   factory Graph.withSampleData() {
+    List<charts.Series<dynamic, dynamic>> name = _createSampleData();
+
+    name.forEach((element) {
+      print(element.data);
+    });
+
     return new Graph(
-      _createSampleData(),
+      name,
       //No animations for test
       animate: false,
     );
@@ -220,6 +226,11 @@ class TimeSeriesSales {
   final int sales;
 
   TimeSeriesSales(this.time, this.sales);
+
+  @override
+  String toString() {
+    return time.toString() + " / " + sales.toString();
+  }
 }
 
 /// Sample temperatures data type
@@ -228,6 +239,11 @@ class TemperatureValues {
   final int temp;
 
   TemperatureValues(this.time, this.temp);
+
+  @override
+  String toString() {
+    return time.toString() + " / " + temp.toString();
+  }
 }
 
 /// Sample humidity data type
