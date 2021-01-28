@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class GraphsTemp extends StatefulWidget {
-  GraphsTemp();
+  final dynamic dbKey;
+
+  GraphsTemp(this.dbKey);
 
   @override
-  State<StatefulWidget> createState() => _BuilderTemp();
+  State<StatefulWidget> createState() => _BuilderTemp(dbKey);
 }
 
 class _BuilderTemp extends State<GraphsTemp> {
@@ -19,8 +21,9 @@ class _BuilderTemp extends State<GraphsTemp> {
   List<TemperatureValues> fData;
   List<String> newList;
   var _ref;
+  final dynamic dbKey;
 
-  _BuilderTemp();
+  _BuilderTemp(this.dbKey);
 
   @override
   void initState() {
@@ -35,7 +38,7 @@ class _BuilderTemp extends State<GraphsTemp> {
     _ref = FirebaseDatabase.instance
         .reference()
         .child('clusters/')
-        .child('hamburg_stadtpark/')
+        .child(dbKey)
         .child('balloons/')
         .child('ttgo/')
         .child('temperature/')
@@ -66,12 +69,11 @@ class _BuilderTemp extends State<GraphsTemp> {
                   child: Image.asset(
                     'assets/images/miniloon.png',
                   ),
-                  //padding: const EdgeInsets.all(30),
-                  padding: const EdgeInsets.only(
-                      bottom: 20, top: 30, left: 30, right: 30),
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.width * 0.07),
                 ))),
         body: new Container(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
             child: new charts.TimeSeriesChart(
               sortedData,
               animate: false,

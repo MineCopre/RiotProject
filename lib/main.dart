@@ -1,9 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
-import 'dart:convert';
-import 'dart:io';
-import 'dart:async';
-import 'dart:typed_data';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -12,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:riot_projekt/graphs/graphsTemp.dart';
+import 'package:riot_projekt/height.dart';
 import 'graphs/graphsHum.dart';
 import 'graphs/graphsPres.dart';
 
@@ -21,7 +17,6 @@ void main() async {
   ));
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(MyApp());
 }
 
@@ -61,10 +56,11 @@ class _MyHomePageState extends State<MyHomePage> {
   CircleId _activeCircle;
   LatLng _initialLatLng;
 
-  double temperature;
-  String temperatureS;
-  double humidity;
-  String humidityS;
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,9 +243,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Image.asset(
                         'assets/images/miniloon.png',
                       ),
-                      //padding: const EdgeInsets.all(30),
-                      padding: const EdgeInsets.only(
-                          bottom: 20, top: 30, left: 30, right: 30),
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.width * 0.07),
                     ))),
             //Full background for balloon image
             body: Container(
@@ -258,17 +253,51 @@ class _MyHomePageState extends State<MyHomePage> {
                 //Column where the text and cards will stay
                 child: Column(children: <Widget>[
                   Container(
-                    padding: const EdgeInsets.all(15),
-                    child: AutoSizeText(
-                      'Real-Time Data: ',
-                      style: const TextStyle(
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25),
-                      minFontSize: 20,
-                      maxLines: 1,
+                    padding: EdgeInsets.all(
+                        MediaQuery.of(context).size.width * 0.035),
+                    child: Row(
+                      //mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Container(
+                            child: AutoSizeText(
+                          'Real-Time Data: ',
+                          style: TextStyle(
+                              fontFamily: 'Roboto',
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.05,
+                              color: Color(0xFF0C2D48)),
+                          maxLines: 1,
+                        )),
+                        Container(
+                          padding: EdgeInsets.only(
+                              left: MediaQuery.of(context).size.width * 0.18),
+                          child: FlatButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            color: Color(0xFFB1D4E0),
+                            textColor: Color(0xFF0C2D48),
+                            padding: EdgeInsets.all(
+                                MediaQuery.of(context).size.width * 0.033),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Height()));
+                            },
+                            child: Text(
+                              "Height Control",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: MediaQuery.of(context).size.width *
+                                      0.045),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
-                    alignment: Alignment.centerLeft,
+                    alignment: Alignment.centerRight,
                   ),
                   new Expanded(
                       //Each "card" is wrapped by each container
@@ -276,12 +305,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     scrollDirection: Axis.horizontal,
                     primary: false,
                     //padding: const EdgeInsets.all(30),
-                    padding: const EdgeInsets.only(
-                        bottom: 30,
-                        top: 15,
-                        left: 15,
-                        right:
-                            30), //Left must be equal to padding in container above to line up with the text
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).size.width * 0.05,
+                        top: MediaQuery.of(context).size.width * 0.02,
+                        left: MediaQuery.of(context).size.width * 0.033,
+                        right: MediaQuery.of(context).size.width *
+                            0.1), //Left must be equal to padding in container above to line up with the text
                     mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
                     crossAxisCount: 1,
                     children: <Widget>[
@@ -291,11 +320,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   )),
                   Container(
-                      height: MediaQuery.of(context).size.height * 0.4,
-                      padding: const EdgeInsets.all(10),
+                      height: MediaQuery.of(context).size.height * 0.45,
+                      padding: EdgeInsets.all(
+                          MediaQuery.of(context).size.width * 0.025),
                       decoration: BoxDecoration(
                           color: Color(0xFFB1D4E0),
-                          borderRadius: BorderRadius.circular(15)),
+                          borderRadius: BorderRadius.circular(5)),
                       child: _initialLatLng == null
                           ? Container(
                               alignment: Alignment.bottomCenter,
@@ -306,10 +336,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                       fontFamily: 'Roboto',
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xFF0C2D48),
-                                      fontSize: 25),
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.05),
                                 ),
-                              ),
-                            )
+                              ))
                           : Center(
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(15),
@@ -366,77 +397,79 @@ class _MyHomePageState extends State<MyHomePage> {
       measure = '%';
     }
 
-      return FutureBuilder(
-          future: activeClusterMap != null ?
-            ref.child('clusters').child(activeClusterMap.entries.first.key).child(s).once() : null,
-          builder:
-              (context, AsyncSnapshot<DataSnapshot> snapshot) {
-            if (snapshot.hasData) {
-              value = snapshot.data.value;
-              valueS = value.toStringAsFixed(2);
-              return new GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => chooseGraph(title)));
-                },
-                child: Container(
-                  decoration: new BoxDecoration(
-                      color: Color(0xFFB1D4E0),
-                      //color: Colors.red,
-                      borderRadius: new BorderRadius.circular(15)),
-                  padding: const EdgeInsets.all(8),
-                  child: Center(
-                    child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(children: <TextSpan>[
-                          TextSpan(
-                              text: title + '\n\n',
-                              style: TextStyle(
-                                  fontFamily: "Roboto",
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  color: Color(0xFF0C2D48))),
-                          TextSpan(
-                            text: "$valueS$measure",
+    return FutureBuilder(
+        future: activeClusterMap != null
+            ? ref
+                .child('clusters')
+                .child(activeClusterMap.entries.first.key)
+                .child(s)
+                .once()
+            : null,
+        builder: (context, AsyncSnapshot<DataSnapshot> snapshot) {
+          if (snapshot.hasData) {
+            value = snapshot.data.value;
+            valueS = value.toStringAsFixed(2);
+            return new GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => chooseGraph(
+                            title, activeClusterMap.entries.first.key)));
+              },
+              child: Container(
+                decoration: new BoxDecoration(
+                    color: Color(0xFFB1D4E0),
+                    //color: Colors.red,
+                    borderRadius: new BorderRadius.circular(15)),
+                padding: const EdgeInsets.all(8),
+                child: Center(
+                  child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(children: <TextSpan>[
+                        TextSpan(
+                            text: title + '\n\n',
                             style: TextStyle(
                                 fontFamily: "Roboto",
                                 fontWeight: FontWeight.bold,
-                                fontSize: 25,
-                                color: Color(0xFF0C2D48)),
-                          )
-                        ])),
-                  ),
+                                fontSize: 20,
+                                color: Color(0xFF0C2D48))),
+                        TextSpan(
+                          text: "$valueS$measure",
+                          style: TextStyle(
+                              fontFamily: "Roboto",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25,
+                              color: Color(0xFF0C2D48)),
+                        )
+                      ])),
                 ),
-              );
-            }
-            else
-              {
-                Container(
-                  alignment: Alignment.bottomCenter,
-                  child: Center(
-                    child: Text(
-                      'LOADING MAP...',
-                      style: TextStyle(
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF0C2D48),
-                          fontSize: 25),
-                    ),
-                  ),
-                );
-              }
-            return CircularProgressIndicator();
-          });
-
+              ),
+            );
+          } else {
+            Container(
+              alignment: Alignment.bottomCenter,
+              child: Center(
+                child: Text(
+                  'LOADING MAP...',
+                  style: TextStyle(
+                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0C2D48),
+                      fontSize: 25),
+                ),
+              ),
+            );
+          }
+          return CircularProgressIndicator();
+        });
   }
 
-  chooseGraph(String title) {
+  chooseGraph(String title, dynamic key) {
     if (title == 'Temperature')
-      return GraphsTemp();
+      return GraphsTemp(key);
     else if (title == 'Humidity')
-      return GraphsHum();
-    else if (title == 'Pressure') return GraphsPres();
+      return GraphsHum(key);
+    else if (title == 'Pressure') return GraphsPres(key);
   }
 }
