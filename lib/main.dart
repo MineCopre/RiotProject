@@ -11,12 +11,19 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+<<<<<<< Updated upstream
 import 'package:intl/intl.dart';
 import 'package:riot_projekt/controller.dart';
 import 'package:riot_projekt/graphs.dart';
 import 'package:riot_projekt/graphsNew.dart';
 
 import 'model.dart';
+=======
+import 'package:riot_projekt/graphs/graphsTemp.dart';
+import 'package:riot_projekt/height.dart';
+import 'graphs/graphsHum.dart';
+import 'graphs/graphsPres.dart';
+>>>>>>> Stashed changes
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -24,7 +31,6 @@ void main() async {
   ));
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(MyApp());
 }
 
@@ -72,10 +78,18 @@ class _MyHomePageState extends State<MyHomePage> {
   CircleId _activeCircle;
   LatLng _initialLatLng;
 
+<<<<<<< Updated upstream
   var retrievedName;
   var temperature;
   dynamic humidity;
   var indexTemp;
+=======
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
+>>>>>>> Stashed changes
 
   @override
   Widget build(BuildContext context) {
@@ -246,44 +260,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Image.asset(
                         'assets/images/miniloon.png',
                       ),
-                      //padding: const EdgeInsets.all(30),
-                      padding: const EdgeInsets.only(
-                          bottom: 20, top: 30, left: 30, right: 30),
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.width * 0.02),
                     ))),
             //Full background for balloon image
             body: Container(
-                //height: MediaQuery.of(context).size.height * 0.65,
-                color: Colors.white,
-                //Column where the text and cards will stay
-                child: Column(children: <Widget>[
-                  Container(
-                    padding: const EdgeInsets.all(15),
-                    child: AutoSizeText(
-                      'Real-Time Data: ',
-                      style: const TextStyle(
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25),
-                      minFontSize: 20,
-                      maxLines: 1,
-                    ),
-                    alignment: Alignment.centerLeft,
-                  ),
-                  new Expanded(
-                      //Each "card" is wrapped by each container
-                      child: GridView.count(
-                    scrollDirection: Axis.horizontal,
-                    primary: false,
-                    //padding: const EdgeInsets.all(30),
-                    padding: const EdgeInsets.only(
-                        bottom: 30,
-                        top: 15,
-                        left: 15,
-                        right:
-                            30), //Left must be equal to padding in container above to line up with the text
-                    mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
-                    crossAxisCount: 1,
+              //height: MediaQuery.of(context).size.height * 0.65,
+              color: Colors.white,
+              //Column where the text and cards will stay
+              child: Column(children: <Widget>[
+                Container(
+                  padding:
+                      EdgeInsets.all(MediaQuery.of(context).size.width * 0.035),
+                  child: Row(
+                    //mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
+<<<<<<< Updated upstream
                       FutureBuilder(
                           future: ref
                               .child("hamburg_stadtpark")
@@ -392,52 +384,122 @@ class _MyHomePageState extends State<MyHomePage> {
                       height: MediaQuery.of(context).size.height * 0.4,
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
+=======
+                      Container(
+                          child: AutoSizeText(
+                        'Real-Time Data: ',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: MediaQuery.of(context).size.width * 0.05,
+                            color: Color(0xFF0C2D48)),
+                        maxLines: 1,
+                      )),
+                      Container(
+                        padding: EdgeInsets.only(
+                            left: MediaQuery.of(context).size.width * 0.18),
+                        child: FlatButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+>>>>>>> Stashed changes
                           color: Color(0xFFB1D4E0),
-                          borderRadius: BorderRadius.circular(15)),
-                      child: _initialLatLng == null
-                          ? Container(
-                              alignment: Alignment.bottomCenter,
-                              child: Center(
-                                child: Text(
-                                  'LOADING MAP...',
-                                  style: TextStyle(
-                                      fontFamily: 'Roboto',
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF0C2D48),
-                                      fontSize: 25),
-                                ),
+                          textColor: Color(0xFF0C2D48),
+                          padding: EdgeInsets.all(
+                              MediaQuery.of(context).size.width * 0.033),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Height()));
+                          },
+                          child: Text(
+                            "Height Control",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.045),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  alignment: Alignment.centerRight,
+                ),
+                new Expanded(
+                    //Each "card" is wrapped by each container
+                    child: GridView.count(
+                  scrollDirection: Axis.horizontal,
+                  primary: false,
+                  //padding: const EdgeInsets.all(30),
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).size.width * 0.05,
+                      top: MediaQuery.of(context).size.width * 0.02,
+                      left: MediaQuery.of(context).size.width * 0.033,
+                      right: MediaQuery.of(context).size.width *
+                          0.1), //Left must be equal to padding in container above to line up with the text
+                  mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
+                  crossAxisCount: 1,
+                  children: <Widget>[
+                    getCard('avg_temp', ref),
+                    getCard('avg_hum', ref),
+                    getCard('avg_pres', ref)
+                  ],
+                )),
+                Container(
+                    height: MediaQuery.of(context).size.height * 0.45,
+                    padding: EdgeInsets.all(
+                        MediaQuery.of(context).size.width * 0.025),
+                    decoration: BoxDecoration(
+                        color: Color(0xFFB1D4E0),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: _initialLatLng == null
+                        ? Container(
+                            alignment: Alignment.bottomCenter,
+                            child: Center(
+                              child: Text(
+                                'LOADING MAP...',
+                                style: TextStyle(
+                                    fontFamily: 'Roboto',
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF0C2D48),
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            0.05),
                               ),
-                            )
-                          : Center(
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: Align(
-                                      //heightFactor: 0.3,
-                                      //widthFactor: 2.5,
-                                      child: GoogleMap(
-                                    mapType: MapType.terrain,
-                                    initialCameraPosition: CameraPosition(
-                                      target: _initialLatLng,
-                                      zoom: 14.4746,
-                                    ),
-                                    onMapCreated:
-                                        (GoogleMapController controller) {
-                                      _controller.complete(controller);
-                                      //_getAllClusters();
-                                    },
-                                    compassEnabled: true,
-                                    tiltGesturesEnabled: false,
-                                    onTap: (latLng) {},
-                                    onLongPress: (latLng) {
-                                      _addClusterCircle(latLng);
-                                    },
-                                    markers:
-                                        Set<Marker>.of(_clustersMarkers.values),
-                                    circles:
-                                        Set<Circle>.of(_clustersCircles.values),
-                                  ))),
-                            )),
-                ]))));
+                            ),
+                          )
+                        : Center(
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Align(
+                                    //heightFactor: 0.3,
+                                    //widthFactor: 2.5,
+                                    child: GoogleMap(
+                                  mapType: MapType.terrain,
+                                  initialCameraPosition: CameraPosition(
+                                    target: _initialLatLng,
+                                    zoom: 14.4746,
+                                  ),
+                                  onMapCreated:
+                                      (GoogleMapController controller) {
+                                    _controller.complete(controller);
+                                    //_getAllClusters();
+                                  },
+                                  compassEnabled: true,
+                                  tiltGesturesEnabled: false,
+                                  onTap: (latLng) {},
+                                  onLongPress: (latLng) {
+                                    _addClusterCircle(latLng);
+                                  },
+                                  markers:
+                                      Set<Marker>.of(_clustersMarkers.values),
+                                  circles:
+                                      Set<Circle>.of(_clustersCircles.values),
+                                ))),
+                          )),
+              ]),
+            )));
   }
 
   @override
@@ -450,4 +512,81 @@ class _MyHomePageState extends State<MyHomePage> {
     ]);
     super.dispose();
   }
+<<<<<<< Updated upstream
+=======
+
+  getCard(String s, DatabaseReference ref) {
+    String title;
+    String measure;
+    dynamic value;
+    String valueS;
+
+    if (s.contains('pres')) {
+      title = 'Pressure';
+      measure = 'hPa';
+    } else if (s.contains('temp')) {
+      title = 'Temperature';
+      measure = 'ºC';
+    } else if (s.contains('hum')) {
+      title = 'Humidity';
+      measure = '%';
+    }
+
+    return FutureBuilder(
+        future:
+            ref.child('clusters').child('hamburg_stadtpark').child(s).once(),
+        builder: (context, AsyncSnapshot<DataSnapshot> snapshot) {
+          if (snapshot.hasData) {
+            value = snapshot.data.value;
+            valueS = value.toStringAsFixed(2);
+            return new GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => chooseGraph(title)));
+              },
+              child: Container(
+                decoration: new BoxDecoration(
+                    color: Color(0xFFB1D4E0),
+                    //color: Colors.red,
+                    borderRadius: new BorderRadius.circular(15)),
+                child: Center(
+                  child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(children: <TextSpan>[
+                        TextSpan(
+                            text: title + '\n\n',
+                            style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.05,
+                                color: Color(0xFF0C2D48))),
+                        TextSpan(
+                          text: "$valueS$measure",
+                          style: TextStyle(
+                              fontFamily: "Roboto",
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.065,
+                              color: Color(0xFF0C2D48)),
+                        )
+                      ])),
+                ),
+              ),
+            );
+          }
+          return CircularProgressIndicator();
+        });
+  }
+
+  chooseGraph(String title) {
+    if (title == 'Temperature')
+      return GraphsTemp();
+    else if (title == 'Humidity')
+      return GraphsHum();
+    else if (title == 'Pressure') return GraphsPres();
+  }
+>>>>>>> Stashed changes
 }
