@@ -1,6 +1,7 @@
 # RiotProject Smartphone App
 
 ![MiniLoon](/assets/images/miniloon.png)
+
 This app has as objective to easily display and interact with the balloons of this project.
 
 # Description
