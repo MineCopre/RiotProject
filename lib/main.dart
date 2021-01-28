@@ -56,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final fb = FirebaseDatabase.instance;
   Map<MarkerId, Marker> _clustersMarkers = <MarkerId, Marker>{};
   Map<CircleId, Circle> _clustersCircles = <CircleId, Circle>{};
+  Map activeClusterMap;
   MarkerId _activeMarker;
   CircleId _activeCircle;
   LatLng _initialLatLng;
@@ -68,6 +69,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final ref = fb.reference();
+
+    if (_activeCircle != null) {
+      ref
+          .child('clusters')
+          .orderByChild("id")
+          .equalTo(int.parse(_activeCircle.value))
+          .once()
+          .then((DataSnapshot data) {
+        activeClusterMap = data.value;
+      });
+    }
 
     ref.child("mapY").once().then((DataSnapshot data) {
       double lng = data.value;
@@ -207,10 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _getCircles() {
       setState(() {
-        ref
-            .child("clusters")
-            .once()
-            .then((DataSnapshot data) {
+        ref.child("clusters").once().then((DataSnapshot data) {
           Map clusterMap = data.value;
           CircleId circleId;
           clusterMap.entries.forEach((element) {
@@ -276,9 +285,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
                     crossAxisCount: 1,
                     children: <Widget>[
-                      getCard('avg_temp', ref),
-                      getCard('avg_hum', ref),
-                      getCard('avg_pres', ref)
+                      getCard('avg_temp', ref, activeClusterMap),
+                      getCard('avg_hum', ref, activeClusterMap),
+                      getCard('avg_pres', ref, activeClusterMap)
                     ],
                   )),
                   Container(
@@ -340,7 +349,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  getCard(String s, DatabaseReference ref) {
+  getCard(String s, DatabaseReference ref, Map activeClusterMap) {
     String title;
     String measure;
     dynamic value;
@@ -357,56 +366,70 @@ class _MyHomePageState extends State<MyHomePage> {
       measure = '%';
     }
 
-    return FutureBuilder(
-        future:
-            ref.child('clusters').child('hamburg_stadtpark').child(s).once(),
-        builder: (context, AsyncSnapshot<DataSnapshot> snapshot) {
-          if (snapshot.hasData) {
-            value = snapshot.data.value;
-            valueS = value.toStringAsFixed(2);
-            return new GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => chooseGraph(title)));
-                /*
-                                              builder: (context) =>
-                                                  GraphsTemp()));
-                                                  */
-              },
-              child: Container(
-                decoration: new BoxDecoration(
-                    color: Color(0xFFB1D4E0),
-                    //color: Colors.red,
-                    borderRadius: new BorderRadius.circular(15)),
-                padding: const EdgeInsets.all(8),
-                child: Center(
-                  child: RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(children: <TextSpan>[
-                        TextSpan(
-                            text: title + '\n\n',
+      return FutureBuilder(
+          future: activeClusterMap != null ?
+            ref.child('clusters').child(activeClusterMap.entries.first.key).child(s).once() : null,
+          builder:
+              (context, AsyncSnapshot<DataSnapshot> snapshot) {
+            if (snapshot.hasData) {
+              value = snapshot.data.value;
+              valueS = value.toStringAsFixed(2);
+              return new GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => chooseGraph(title)));
+                },
+                child: Container(
+                  decoration: new BoxDecoration(
+                      color: Color(0xFFB1D4E0),
+                      //color: Colors.red,
+                      borderRadius: new BorderRadius.circular(15)),
+                  padding: const EdgeInsets.all(8),
+                  child: Center(
+                    child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(children: <TextSpan>[
+                          TextSpan(
+                              text: title + '\n\n',
+                              style: TextStyle(
+                                  fontFamily: "Roboto",
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: Color(0xFF0C2D48))),
+                          TextSpan(
+                            text: "$valueS$measure",
                             style: TextStyle(
                                 fontFamily: "Roboto",
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Color(0xFF0C2D48))),
-                        TextSpan(
-                          text: "$valueS$measure",
-                          style: TextStyle(
-                              fontFamily: "Roboto",
-                              fontWeight: FontWeight.bold,
-                              fontSize: 25,
-                              color: Color(0xFF0C2D48)),
-                        )
-                      ])),
+                                fontSize: 25,
+                                color: Color(0xFF0C2D48)),
+                          )
+                        ])),
+                  ),
                 ),
-              ),
-            );
-          }
-          return CircularProgressIndicator();
-        });
+              );
+            }
+            else
+              {
+                Container(
+                  alignment: Alignment.bottomCenter,
+                  child: Center(
+                    child: Text(
+                      'LOADING MAP...',
+                      style: TextStyle(
+                          fontFamily: 'Roboto',
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF0C2D48),
+                          fontSize: 25),
+                    ),
+                  ),
+                );
+              }
+            return CircularProgressIndicator();
+          });
+
   }
 
   chooseGraph(String title) {
