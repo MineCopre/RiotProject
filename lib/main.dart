@@ -1,29 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-import 'dart:async';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-<<<<<<< Updated upstream
-import 'package:intl/intl.dart';
-import 'package:riot_projekt/controller.dart';
-import 'package:riot_projekt/graphs.dart';
-import 'package:riot_projekt/graphsNew.dart';
-
-import 'model.dart';
-=======
 import 'package:riot_projekt/graphs/graphsTemp.dart';
 import 'package:riot_projekt/height.dart';
 import 'graphs/graphsHum.dart';
 import 'graphs/graphsPres.dart';
->>>>>>> Stashed changes
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -55,15 +41,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the v  alues (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -78,31 +55,15 @@ class _MyHomePageState extends State<MyHomePage> {
   CircleId _activeCircle;
   LatLng _initialLatLng;
 
-<<<<<<< Updated upstream
-  var retrievedName;
-  var temperature;
-  dynamic humidity;
-  var indexTemp;
-=======
   @override
   void initState() {
     super.initState();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
->>>>>>> Stashed changes
 
   @override
   Widget build(BuildContext context) {
     final ref = fb.reference();
-
-    ref.child("humidity").once().then((DataSnapshot data) {
-      //print(data.value);
-      //print(data.key);
-
-      setState(() {
-        humidity = data.value;
-      });
-    });
 
     ref.child("mapY").once().then((DataSnapshot data) {
       setState(() {
@@ -261,7 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         'assets/images/miniloon.png',
                       ),
                       padding: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.width * 0.02),
+                          top: MediaQuery.of(context).size.width * 0.07),
                     ))),
             //Full background for balloon image
             body: Container(
@@ -275,116 +236,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Row(
                     //mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-<<<<<<< Updated upstream
-                      FutureBuilder(
-                          future: ref
-                              .child("hamburg_stadtpark")
-                              .child("avg_temp")
-                              .once(),
-                          builder:
-                              (context, AsyncSnapshot<DataSnapshot> snapshot) {
-                            if (snapshot.hasData) {
-                              /*
-                              Map<dynamic, dynamic> values =
-                                  snapshot.data.value;
-
-                              if (values == null) {
-                                temperature = "No Data";
-                              } else {
-                                values.forEach((key, value) {
-                                  //print(readTimeStamp(value["time"]));
-                                  temperature = value["value"];
-                                });
-                         }
-                              */
-                              temperature = snapshot.data.value;
-                              return new GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              //Graph.withSampleTemperature()));
-                                              GraphsTemp()));
-                                },
-                                child: Container(
-                                  decoration: new BoxDecoration(
-                                      color: Color(0xFFB1D4E0),
-                                      //color: Colors.red,
-                                      borderRadius:
-                                          new BorderRadius.circular(15)),
-                                  padding: const EdgeInsets.all(8),
-                                  child: Center(
-                                    child: RichText(
-                                        textAlign: TextAlign.center,
-                                        text: TextSpan(children: <TextSpan>[
-                                          TextSpan(
-                                              text: "Temperature\n\n",
-                                              style: TextStyle(
-                                                  fontFamily: "Roboto",
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20,
-                                                  color: Color(0xFF0C2D48))),
-                                          TextSpan(
-                                            text: "$temperatureº",
-                                            style: TextStyle(
-                                                fontFamily: "Roboto",
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 25,
-                                                color: Color(0xFF0C2D48)),
-                                          )
-                                        ])),
-                                  ),
-                                ),
-                              );
-                            }
-                            return CircularProgressIndicator();
-                          }),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      Graph.withSampleHumidity()));
-                          print("Humidity");
-                        },
-                        child: Container(
-                          decoration: new BoxDecoration(
-                              color: Color(0xFFB1D4E0),
-                              //color: Colors.red,
-                              borderRadius: new BorderRadius.circular(15)),
-                          padding: const EdgeInsets.all(8),
-                          child: Center(
-                            child: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(children: <TextSpan>[
-                                  TextSpan(
-                                      text: "Humidity\n\n",
-                                      style: TextStyle(
-                                          fontFamily: "Roboto",
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                          color: Color(0xFF0C2D48))),
-                                  TextSpan(
-                                    text: "$humidity%",
-                                    style: TextStyle(
-                                        fontFamily: "Roboto",
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 25,
-                                        color: Color(0xFF0C2D48)),
-                                  )
-                                ])),
-                          ),
-                        ),
-                      )
-                    ],
-                  )),
-                  Container(
-                      height: MediaQuery.of(context).size.height * 0.4,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-=======
                       Container(
                           child: AutoSizeText(
                         'Real-Time Data: ',
@@ -402,7 +253,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
->>>>>>> Stashed changes
                           color: Color(0xFFB1D4E0),
                           textColor: Color(0xFF0C2D48),
                           padding: EdgeInsets.all(
@@ -512,8 +362,6 @@ class _MyHomePageState extends State<MyHomePage> {
     ]);
     super.dispose();
   }
-<<<<<<< Updated upstream
-=======
 
   getCard(String s, DatabaseReference ref) {
     String title;
@@ -588,5 +436,4 @@ class _MyHomePageState extends State<MyHomePage> {
       return GraphsHum();
     else if (title == 'Pressure') return GraphsPres();
   }
->>>>>>> Stashed changes
 }

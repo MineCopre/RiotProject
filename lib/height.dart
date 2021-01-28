@@ -40,7 +40,7 @@ class _Height extends State<Height> {
                     'assets/images/miniloon.png',
                   ),
                   padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.width * 0.02),
+                      top: MediaQuery.of(context).size.width * 0.07),
                 ))),
         body: new Container(
           alignment: Alignment.center,

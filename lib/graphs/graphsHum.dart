@@ -67,7 +67,7 @@ class _BuilderTemp extends State<GraphsHum> {
                     'assets/images/miniloon.png',
                   ),
                   padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.width * 0.02),
+                      top: MediaQuery.of(context).size.width * 0.07),
                 ))),
         body: new Container(
             padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
