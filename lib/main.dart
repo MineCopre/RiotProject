@@ -4,17 +4,16 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 import 'dart:typed_data';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:intl/intl.dart';
-import 'package:riot_projekt/graphs.dart';
+import 'package:riot_projekt/graphs/graphsTemp.dart';
+import 'graphs/graphsHum.dart';
+import 'graphs/graphsPres.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -47,15 +46,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the v  alues (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -64,24 +54,21 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final fb = FirebaseDatabase.instance;
-  final myController = TextEditingController();
-
   Map<MarkerId, Marker> _clustersMarkers = <MarkerId, Marker>{};
   Map<CircleId, Circle> _clustersCircles = <CircleId, Circle>{};
   MarkerId _activeMarker;
   CircleId _activeCircle;
   LatLng _initialLatLng;
 
-  var retrievedName;
-  var temperature;
-  var humidity;
-  var indexTemp;
+  double temperature;
+  String temperatureS;
+  double humidity;
+  String humidityS;
 
   @override
   Widget build(BuildContext context) {
     final ref = fb.reference();
 
-    //Map functions
     ref.child("mapY").once().then((DataSnapshot data) {
       double lng = data.value;
       ref.child("mapX").once().then((DataSnapshot data) {
@@ -98,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         MarkerId markerId = MarkerId(circleId.value.toString());
         MarkerId activeMarkerId = MarkerId(activeCircleId.value.toString());
+
         //Create markers
         Marker activeMarker = Marker(
           markerId: markerId,
@@ -191,6 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Future _addClusterCircle(LatLng center, CircleId circleId) async {
       setState(() {
         _addClusterMarker(center);
+        CircleId circleId = CircleId(_clustersCircles.length.toString());
         if (_activeCircle != null) {
           Circle circle = Circle(
               circleId: circleId,
@@ -247,9 +236,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         borderRadius: BorderRadius.circular(15)),
                     flexibleSpace: Container(
                       child: Image.asset(
-                        'assets/images/MiniLoonLogoFinal.jpg',
+                        'assets/images/miniloon.png',
                       ),
-                      padding: const EdgeInsets.all(30),
+                      //padding: const EdgeInsets.all(30),
+                      padding: const EdgeInsets.only(
+                          bottom: 20, top: 30, left: 30, right: 30),
                     ))),
             //Full background for balloon image
             body: Container(
@@ -278,127 +269,34 @@ class _MyHomePageState extends State<MyHomePage> {
                     //padding: const EdgeInsets.all(30),
                     padding: const EdgeInsets.only(
                         bottom: 30,
-                        top: 30,
+                        top: 15,
                         left: 15,
                         right:
                             30), //Left must be equal to padding in container above to line up with the text
                     mainAxisSpacing: MediaQuery.of(context).size.width * 0.15,
                     crossAxisCount: 1,
                     children: <Widget>[
-                      FutureBuilder(
-                          future: ref.child("humidity").once(),
-                          builder:
-                              (context, AsyncSnapshot<DataSnapshot> snapshot) {
-                            if (snapshot.hasData) {
-                              Map<dynamic, dynamic> values =
-                                  snapshot.data.value;
-
-                              if (values == null) {
-                                temperature = "No Data";
-                              } else {
-                                values.forEach((key, value) {
-                                  print(value["value"]);
-                                  //print(readTimeStamp(value["time"]));
-                                  temperature = value["value"];
-                                  temperature += "º";
-                                });
-                              }
-                              return new GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              Graph.withSampleTemperature()));
-                                  //Graph.getTemperature()));
-                                },
-                                child: Container(
-                                  decoration: new BoxDecoration(
-                                      color: Color(0xFFB1D4E0),
-                                      //color: Colors.red,
-                                      borderRadius:
-                                          new BorderRadius.circular(15)),
-                                  padding: const EdgeInsets.all(8),
-                                  child: Center(
-                                    child: RichText(
-                                        textAlign: TextAlign.center,
-                                        text: TextSpan(children: <TextSpan>[
-                                          TextSpan(
-                                              text: "Temperature\n\n",
-                                              style: TextStyle(
-                                                  fontFamily: "Roboto",
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20,
-                                                  color: Color(0xFF0C2D48))),
-                                          TextSpan(
-                                            text: "$temperature",
-                                            style: TextStyle(
-                                                fontFamily: "Roboto",
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 25,
-                                                color: Color(0xFF0C2D48)),
-                                          )
-                                        ])),
-                                  ),
-                                ),
-                              );
-                            }
-                            return CircularProgressIndicator();
-                          }),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      Graph.withSampleHumidity()));
-                          print("Humidity");
-                        },
-                        child: Container(
-                          decoration: new BoxDecoration(
-                              color: Color(0xFFB1D4E0),
-                              //color: Colors.red,
-                              borderRadius: new BorderRadius.circular(15)),
-                          padding: const EdgeInsets.all(8),
-                          child: Center(
-                            child: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(children: <TextSpan>[
-                                  TextSpan(
-                                      text: "Humidity\n\n",
-                                      style: TextStyle(
-                                          fontFamily: "Roboto",
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                          color: Color(0xFF0C2D48))),
-                                  TextSpan(
-                                    text: "$humidity%",
-                                    style: TextStyle(
-                                        fontFamily: "Roboto",
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 25,
-                                        color: Color(0xFF0C2D48)),
-                                  )
-                                ])),
-                          ),
-                        ),
-                      )
+                      getCard('avg_temp', ref),
+                      getCard('avg_hum', ref),
+                      getCard('avg_pres', ref)
                     ],
                   )),
                   Container(
-                      height: MediaQuery.of(context).size.height * 0.3,
+                      height: MediaQuery.of(context).size.height * 0.4,
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                           color: Color(0xFFB1D4E0),
                           borderRadius: BorderRadius.circular(15)),
                       child: _initialLatLng == null
                           ? Container(
+                              alignment: Alignment.bottomCenter,
                               child: Center(
                                 child: Text(
                                   'LOADING MAP...',
                                   style: TextStyle(
                                       fontFamily: 'Roboto',
-                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF0C2D48),
                                       fontSize: 25),
                                 ),
                               ),
@@ -428,7 +326,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                         Set<Circle>.of(_clustersCircles.values),
                                   ))),
                             )),
-                  Center(child: Text("Hello there\nHello there"))
                 ]))));
   }
 
@@ -440,7 +337,83 @@ class _MyHomePageState extends State<MyHomePage> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight
     ]);
-    myController.dispose();
     super.dispose();
+  }
+
+  getCard(String s, DatabaseReference ref) {
+    String title;
+    String measure;
+    dynamic value;
+    String valueS;
+
+    if (s.contains('pres')) {
+      title = 'Pressure';
+      measure = 'hPa';
+    } else if (s.contains('temp')) {
+      title = 'Temperature';
+      measure = 'ºC';
+    } else if (s.contains('hum')) {
+      title = 'Humidity';
+      measure = '%';
+    }
+
+    return FutureBuilder(
+        future:
+            ref.child('clusters').child('hamburg_stadtpark').child(s).once(),
+        builder: (context, AsyncSnapshot<DataSnapshot> snapshot) {
+          if (snapshot.hasData) {
+            value = snapshot.data.value;
+            valueS = value.toStringAsFixed(2);
+            return new GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => chooseGraph(title)));
+                /*
+                                              builder: (context) =>
+                                                  GraphsTemp()));
+                                                  */
+              },
+              child: Container(
+                decoration: new BoxDecoration(
+                    color: Color(0xFFB1D4E0),
+                    //color: Colors.red,
+                    borderRadius: new BorderRadius.circular(15)),
+                padding: const EdgeInsets.all(8),
+                child: Center(
+                  child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(children: <TextSpan>[
+                        TextSpan(
+                            text: title + '\n\n',
+                            style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Color(0xFF0C2D48))),
+                        TextSpan(
+                          text: "$valueS$measure",
+                          style: TextStyle(
+                              fontFamily: "Roboto",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25,
+                              color: Color(0xFF0C2D48)),
+                        )
+                      ])),
+                ),
+              ),
+            );
+          }
+          return CircularProgressIndicator();
+        });
+  }
+
+  chooseGraph(String title) {
+    if (title == 'Temperature')
+      return GraphsTemp();
+    else if (title == 'Humidity')
+      return GraphsHum();
+    else if (title == 'Pressure') return GraphsPres();
   }
 }
