@@ -69,7 +69,7 @@
     },
     {
       "name": "firebase_core",
-      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-0.5.2+1",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-0.5.3",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
@@ -87,7 +87,7 @@
     },
     {
       "name": "firebase_database",
-      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_database-4.3.0",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_database-4.4.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
@@ -117,7 +117,7 @@
     },
     {
       "name": "google_maps_flutter",
-      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/google_maps_flutter-1.0.6",
+      "rootUri": "file:///C:/flutter/.pub-cache/hosted/pub.dartlang.org/google_maps_flutter-1.0.10",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
@@ -242,7 +242,7 @@
       "languageVersion": "2.7"
     }
   ],
-  "generated": "2020-11-30T15:59:49.558026Z",
+  "generated": "2021-01-11T14:58:40.620621Z",
   "generator": "pub",
   "generatorVersion": "2.10.3"
 }
