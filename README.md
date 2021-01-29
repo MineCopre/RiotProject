@@ -6,7 +6,7 @@ This app has as objective to easily display and interact with the balloons of th
 
 # Description
 ![RIOT](/assets/images/riot.png)
-This app was developed as part of a project sponsored by [RIOT OS]https://www.riot-os.org/ that the release a balloon that can tell us the information regarding the weather in its surrounding like humidity, temperature, and air pressure as objective.
+This app was developed as part of a project sponsored by [RIOT OS](https://www.riot-os.org/) that the release a balloon that can tell us the information regarding the weather in its surrounding like humidity, temperature, and air pressure as objective.
 
 The sole purpose of the app is to present this information in a simple and appealing manner as well as adding some features.
 
